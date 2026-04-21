@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Test Profil de Învățare</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#4f46e5;--primary-light:#e0e7ff;--accent:#10b981;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;--bg:#f8fafc;--white:#fff;
+  --V:#6366f1;--A:#f59e0b;--R:#10b981;--K:#ef4444;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-text-size-adjust:100%}
+
+/* HEADER */
+.header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo{font-size:1rem;font-weight:700;color:var(--primary)}
+.lang-switcher{display:flex;gap:4px;flex-wrap:wrap}
+.lang-btn{border:1px solid var(--border);background:var(--white);color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.78rem;font-weight:700;min-height:36px}
+.lang-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* HERO */
+.hero{max-width:600px;margin:40px auto 0;padding:0 16px 40px;text-align:center}
+.hero h1{font-size:1.7rem;font-weight:800;margin-bottom:12px;line-height:1.3}
+.hero p{color:var(--muted);font-size:.95rem;line-height:1.7;margin-bottom:28px}
+.btn-primary{background:var(--primary);color:#fff;border:none;padding:15px 32px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;width:100%;max-width:320px;min-height:52px;-webkit-tap-highlight-color:transparent}
+.meta-info{display:flex;gap:16px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+.meta-item{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
+.meta-item .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+/* QUIZ */
+.quiz-wrap{max-width:600px;margin:24px auto;padding:0 16px;display:none}
+.progress-bar-wrap{margin-bottom:20px}
+.progress-label{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-bottom:6px}
+.progress-bar{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:var(--primary);border-radius:99px;transition:width .4s}
+
+.question-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.q-label{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.q-text{font-size:1rem;font-weight:600;line-height:1.55;margin-bottom:20px}
+.q-instruction{font-size:.8rem;color:var(--muted);margin-bottom:16px;font-style:italic}
+
+/* SLIDER OPTIONS */
+.options-sliders{display:flex;flex-direction:column;gap:18px}
+.opt-row{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px}
+.opt-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.opt-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.opt-text-label{font-size:.9rem;line-height:1.45;color:var(--text)}
+.slider-wrap{display:flex;align-items:center;gap:8px}
+.slider-min,.slider-max{font-size:.7rem;color:var(--muted);white-space:nowrap;min-width:28px}
+.slider-max{text-align:right}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;flex:1;height:8px;border-radius:4px;outline:none;cursor:pointer;background:#e2e8f0;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--primary);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)
+}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--primary);cursor:pointer;border:2px solid #fff}
+.slider-val{font-size:.8rem;font-weight:700;min-width:20px;text-align:center;color:var(--primary)}
+
+/* SOCIAL SLIDER */
+.social-spectrum{padding:16px;background:var(--bg);border:1px solid var(--border);border-radius:12px}
+.spectrum-labels{display:flex;justify-content:space-between;margin-bottom:10px}
+.spectrum-label{font-size:.82rem;font-weight:600;color:var(--text);max-width:45%;line-height:1.3}
+.spectrum-label.right{text-align:right}
+
+/* NAV */
+.nav-btns{display:flex;justify-content:space-between;margin-top:16px;gap:10px}
+.btn-sec{background:var(--white);color:var(--text);border:1px solid var(--border);padding:13px 20px;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;min-height:48px;flex:1}
+.btn-next-wrap{flex:2}
+.btn-primary.full{width:100%;min-height:48px}
+
+/* RESULTS */
+.results-wrap{max-width:640px;margin:24px auto;padding:0 16px 60px;display:none}
+.results-header{text-align:center;margin-bottom:28px}
+.results-header h2{font-size:1.5rem;font-weight:800;margin-bottom:6px}
+.results-header p{color:var(--muted);font-size:.9rem}
+.card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+.card h3{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:14px}
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:480px){.results-grid{grid-template-columns:1fr}}
+.chart-wrap{max-width:280px;margin:0 auto}
+.score-bars{display:flex;flex-direction:column;gap:14px}
+.score-row{display:flex;flex-direction:column;gap:5px}
+.score-row-header{display:flex;justify-content:space-between}
+.score-name{font-size:.85rem;font-weight:600}
+.score-pct{font-size:.85rem;font-weight:700}
+.score-track{height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.score-fill{height:100%;border-radius:99px}
+.dominant-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px}
+.dominant-badge{display:inline-block;padding:4px 12px;border-radius:99px;font-size:.75rem;font-weight:700;margin-bottom:10px}
+.dominant-card h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.dominant-card p{color:var(--muted);line-height:1.65;font-size:.9rem;margin-bottom:14px}
+.techniques-list{display:flex;flex-wrap:wrap;gap:7px}
+.technique-chip{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:.8rem}
+.social-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+.social-track{height:10px;background:var(--border);border-radius:99px;overflow:hidden;margin:10px 0}
+.social-fill{height:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa);border-radius:99px}
+.social-labels{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);font-weight:600}
+.action-btns{display:flex;gap:10px;flex-wrap:wrap}
+.action-btns .btn-primary{flex:1;min-width:140px}
+.action-btns .btn-sec{flex:1;min-width:120px}
+
+@media print{
+  .header,.lang-switcher,.action-btns,.hero,.quiz-wrap{display:none!important}
+  .results-wrap{display:block!important;margin:0;padding:20px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo" id="logo-text"></div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('ro')">RO</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('de')">DE</button>
+    <button class="lang-btn" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" onclick="setLang('fr')">FR</button>
+  </div>
+</div>
+
+<div class="hero" id="hero-section">
+  <h1 id="hero-title"></h1>
+  <p id="hero-desc"></p>
+  <div class="meta-info">
+    <div class="meta-item"><span class="dot"></span><span id="meta-q"></span></div>
+    <div class="meta-item"><span class="dot"></span><span id="meta-time"></span></div>
+    <div class="meta-item"><span class="dot"></span><span id="meta-free"></span></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()" id="start-btn"></button>
+</div>
+
+<div class="quiz-wrap" id="quiz-section">
+  <div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span id="q-counter"></span>
+      <span id="q-percent"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="question-card">
+    <div class="q-label" id="q-label"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-instruction" id="q-instruction"></div>
+    <div id="options-container"></div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-sec" id="btn-prev" onclick="prevQ()"></button>
+    <div class="btn-next-wrap">
+      <button class="btn-primary full" id="btn-next" onclick="nextQ()"></button>
+    </div>
+  </div>
+</div>
+
+<div class="results-wrap" id="results-section">
+  <div class="results-header">
+    <h2 id="res-title"></h2>
+    <p id="res-sub"></p>
+  </div>
+  <div id="dominant-area"></div>
+  <div id="social-area"></div>
+  <div class="results-grid">
+    <div class="card">
+      <h3 id="chart-label"></h3>
+      <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3 id="scores-label"></h3>
+      <div class="score-bars" id="score-bars"></div>
+    </div>
+  </div>
+  <div class="action-btns">
+    <button class="btn-primary" onclick="window.print()" id="btn-print"></button>
+    <button class="btn-sec" onclick="restartQuiz()" id="btn-restart"></button>
+  </div>
+</div>
+
+<script>
+const T = {
+  ro: {
+    logo: "Test Profil de Învățare",
+    heroTitle: "Descoperă cum înveți cel mai bine",
+    heroDesc: "Un test bazat pe modelul VARK + preferință socială, conceput pentru orice domeniu de învățare: limbi străine, programare, muzică, sport sau orice altă competență.",
+    metaQ: "20 întrebări",
+    metaTime: "7-10 minute",
+    metaFree: "Gratuit, fara cont",
+    startBtn: "Începe testul",
+    qLabel: "Întrebarea",
+    qOf: "din",
+    prevBtn: "Înapoi",
+    nextBtn: "Următoarea",
+    finishBtn: "Vezi rezultatele",
+    resTitle: "Profilul tău de învățare",
+    resSub: "Bazat pe răspunsurile tale, iată cum procesezi și reții informația cel mai eficient.",
+    chartLabel: "Hartă stiluri",
+    scoresLabel: "Scoruri detaliate",
+    dominantTitle: "Stilul tău dominant",
+    secondTitle: "Stil secundar",
+    techniquesLabel: "Tehnici recomandate",
+    socialLabel: "Preferință socială",
+    socialIndep: "Independent",
+    socialCollab: "Colaborativ",
+    btnPrint: "Descarcă / Printează raport",
+    btnRestart: "Repetă testul",
+    dimNames: { V: "Visual", A: "Auditiv", R: "Lectură / Scriere", K: "Kinestezic" },
+    dimColors: { V: "#6366f1", A: "#f59e0b", R: "#10b981", K: "#ef4444" },
+    dimDesc: {
+      V: "Procesezi informația cel mai bine prin imagini, diagrame, culori și reprezentări vizuale. Mintea ta creează hărți mentale și structuri grafice care fac conceptele clare și memorabile.",
+      A: "Înveți eficient ascultând, discutând și explicând cu voce tare. Ritmul, tonul și conversația sunt instrumentele tale naturale de procesare a informației.",
+      R: "Preferi informația scrisă, structurată și detaliată. Notele, cărțile, listele și rezumatele sunt mediul în care gândești cel mai clar.",
+      K: "Înveți făcând. Ai nevoie să experimentezi, să greșești și să ajustezi pentru ca informația să devină reală și utilizabilă. Proiectele și practica directă sunt esențiale pentru tine."
+    },
+    dimTech: {
+      V: ["Mindmapping", "Sketchnoting", "Cod color pe notite", "Diagrame si flowchart-uri", "Infografice", "Prezentari vizuale", "Tablouri Kanban"],
+      A: ["Tehnica teach-back (explică altcuiva)", "Înregistrări audio ale lecțiilor", "Podcasturi tematice", "Discuții și dezbateri", "Rime și ritmuri mnemotetehnice", "Sesiuni de Q&A live", "Voice memo după învățare"],
+      R: ["Metoda Cornell pentru notițe", "Rezumate reformulate", "Flashcard-uri text (Anki)", "Lectură activă cu adnotări", "Jurnale de învățare", "Documentații și ghiduri", "Scrierea de articole sau tutoriale"],
+      K: ["Proiecte practice imediat aplicabile", "Metoda Feynman aplicată", "Simulări și role-play", "Exerciții iterative cu feedback rapid", "Hackathoane și workshopuri", "Învățare prin greșeală controlată", "Prototipare rapidă"]
+    },
+    socialDesc: {
+      independent: "Preferi să înveți singur, în ritmul tău, fără distracții externe. Concentrarea profundă (deep work) este mediul tău optim.",
+      collaborative: "Înveți mai bine în interacțiune cu alții. Grupurile de studiu, partenerul de practică și mentorul accelerează progresul tău.",
+      balanced: "Combini bine munca independentă cu învățarea colaborativă. Poți adapta stilul la context."
+    }
+  },
+  en: {
+    logo: "Learning Profile Test",
+    heroTitle: "Discover how you learn best",
+    heroDesc: "A test based on the VARK model + social preference, designed for any learning domain: languages, coding, music, sports, or any other skill.",
+    metaQ: "20 questions",
+    metaTime: "7-10 minutes",
+    metaFree: "Free, no account needed",
+    startBtn: "Start the test",
+    qLabel: "Question",
+    qOf: "of",
+    prevBtn: "Back",
+    nextBtn: "Next",
+    finishBtn: "See results",
+    resTitle: "Your learning profile",
+    resSub: "Based on your answers, here is how you process and retain information most effectively.",
+    chartLabel: "Style map",
+    scoresLabel: "Detailed scores",
+    dominantTitle: "Your dominant style",
+    secondTitle: "Secondary style",
+    techniquesLabel: "Recommended techniques",
+    socialLabel: "Social preference",
+    socialIndep: "Independent",
+    socialCollab: "Collaborative",
+    btnPrint: "Download / Print report",
+    btnRestart: "Retake the test",
+    dimNames: { V: "Visual", A: "Auditory", R: "Reading / Writing", K: "Kinesthetic" },
+    dimColors: { V: "#6366f1", A: "#f59e0b", R: "#10b981", K: "#ef4444" },
+    dimDesc: {
+      V: "You process information best through images, diagrams, colors, and visual representations. Your mind builds mental maps and graphic structures that make concepts clear and memorable.",
+      A: "You learn effectively by listening, discussing, and explaining aloud. Rhythm, tone, and conversation are your natural tools for processing information.",
+      R: "You prefer written, structured, and detailed information. Notes, books, lists, and summaries are the medium in which you think most clearly.",
+      K: "You learn by doing. You need to experiment, make mistakes, and adjust for information to become real and usable. Projects and direct practice are essential for you."
+    },
+    dimTech: {
+      V: ["Mind mapping", "Sketchnoting", "Color-coded notes", "Diagrams and flowcharts", "Infographics", "Visual presentations", "Kanban boards"],
+      A: ["Teach-back method (explain to someone)", "Audio recordings of lessons", "Topic podcasts", "Discussions and debates", "Mnemonic rhymes and rhythms", "Live Q&A sessions", "Voice memos after learning"],
+      R: ["Cornell note-taking method", "Reformulated summaries", "Text flashcards (Anki)", "Active reading with annotations", "Learning journals", "Guides and documentation", "Writing articles or tutorials"],
+      K: ["Immediately applicable practical projects", "Applied Feynman method", "Simulations and role-play", "Iterative exercises with fast feedback", "Hackathons and workshops", "Controlled mistake-based learning", "Rapid prototyping"]
+    },
+    socialDesc: {
+      independent: "You prefer to learn alone, at your own pace, without external distractions. Deep focus (deep work) is your optimal environment.",
+      collaborative: "You learn better through interaction with others. Study groups, practice partners, and mentors accelerate your progress.",
+      balanced: "You combine independent work with collaborative learning well. You can adapt your style to the context."
+    }
+  },
+  de: {
+    logo: "Lernprofil-Test",
+    heroTitle: "Entdecke, wie du am besten lernst",
+    heroDesc: "Ein Test basierend auf dem VARK-Modell + sozialer Präferenz, für jedes Lerngebiet: Sprachen, Programmierung, Musik, Sport oder jede andere Kompetenz.",
+    metaQ: "20 Fragen",
+    metaTime: "7-10 Minuten",
+    metaFree: "Kostenlos, kein Konto notwendig",
+    startBtn: "Test starten",
+    qLabel: "Frage",
+    qOf: "von",
+    prevBtn: "Zurück",
+    nextBtn: "Nächste",
+    finishBtn: "Ergebnisse sehen",
+    resTitle: "Dein Lernprofil",
+    resSub: "Basierend auf deinen Antworten, so verarbeitest und behältst du Informationen am effektivsten.",
+    chartLabel: "Stilkarte",
+    scoresLabel: "Detaillierte Punkte",
+    dominantTitle: "Dein dominanter Stil",
+    secondTitle: "Sekundärer Stil",
+    techniquesLabel: "Empfohlene Techniken",
+    socialLabel: "Soziale Präferenz",
+    socialIndep: "Unabhängig",
+    socialCollab: "Kollaborativ",
+    btnPrint: "Bericht herunterladen / drucken",
+    btnRestart: "Test wiederholen",
+    dimNames: { V: "Visuell", A: "Auditiv", R: "Lesen / Schreiben", K: "Kinästhetisch" },
+    dimColors: { V: "#6366f1", A: "#f59e0b", R: "#10b981", K: "#ef4444" },
+    dimDesc: {
+      V: "Du verarbeitest Informationen am besten durch Bilder, Diagramme, Farben und visuelle Darstellungen. Dein Geist erstellt mentale Karten und grafische Strukturen, die Konzepte klar und einprägsam machen.",
+      A: "Du lernst effektiv durch Zuhören, Diskutieren und laut Erklären. Rhythmus, Ton und Gespräch sind deine natürlichen Werkzeuge zur Informationsverarbeitung.",
+      R: "Du bevorzugst schriftliche, strukturierte und detaillierte Informationen. Notizen, Bücher, Listen und Zusammenfassungen sind das Medium, in dem du am klarsten denkst.",
+      K: "Du lernst durch Handeln. Du musst experimentieren, Fehler machen und anpassen, damit Informationen real und nutzbar werden. Projekte und direkte Praxis sind für dich unverzichtbar."
+    },
+    dimTech: {
+      V: ["Mind Mapping", "Sketchnoting", "Farbcodierte Notizen", "Diagramme und Flussdiagramme", "Infografiken", "Visuelle Präsentationen", "Kanban-Boards"],
+      A: ["Teach-Back-Methode (jemandem erklären)", "Audioaufnahmen von Lektionen", "Themen-Podcasts", "Diskussionen und Debatten", "Mnemonische Reime und Rhythmen", "Live-Q&A-Sitzungen", "Sprachnotizen nach dem Lernen"],
+      R: ["Cornell-Notiztechnik", "Umformulierte Zusammenfassungen", "Text-Lernkarten (Anki)", "Aktives Lesen mit Anmerkungen", "Lerntagebuch", "Anleitungen und Dokumentationen", "Artikel oder Tutorials schreiben"],
+      K: ["Sofort anwendbare Praxisprojekte", "Angewandte Feynman-Methode", "Simulationen und Rollenspiele", "Iterative Übungen mit schnellem Feedback", "Hackathons und Workshops", "Kontrolliertes fehlerbasiertes Lernen", "Schnelles Prototyping"]
+    },
+    socialDesc: {
+      independent: "Du lernst lieber alleine, in deinem eigenen Tempo, ohne externe Ablenkungen. Tiefe Konzentration (Deep Work) ist deine optimale Umgebung.",
+      collaborative: "Du lernst besser durch Interaktion mit anderen. Lerngruppen, Übungspartner und Mentoren beschleunigen deinen Fortschritt.",
+      balanced: "Du kombinierst selbstständiges Arbeiten gut mit kollaborativem Lernen. Du kannst deinen Stil dem Kontext anpassen."
+    }
+  },
+  es: {
+    logo: "Test de Perfil de Aprendizaje",
+    heroTitle: "Descubre cómo aprendes mejor",
+    heroDesc: "Un test basado en el modelo VARK + preferencia social, diseñado para cualquier área de aprendizaje: idiomas, programación, música, deporte o cualquier otra competencia.",
+    metaQ: "20 preguntas",
+    metaTime: "7-10 minutos",
+    metaFree: "Gratis, sin cuenta",
+    startBtn: "Comenzar el test",
+    qLabel: "Pregunta",
+    qOf: "de",
+    prevBtn: "Atrás",
+    nextBtn: "Siguiente",
+    finishBtn: "Ver resultados",
+    resTitle: "Tu perfil de aprendizaje",
+    resSub: "Basado en tus respuestas, así es como procesas y retienes la información de forma más efectiva.",
+    chartLabel: "Mapa de estilos",
+    scoresLabel: "Puntuaciones detalladas",
+    dominantTitle: "Tu estilo dominante",
+    secondTitle: "Estilo secundario",
+    techniquesLabel: "Técnicas recomendadas",
+    socialLabel: "Preferencia social",
+    socialIndep: "Independiente",
+    socialCollab: "Colaborativo",
+    btnPrint: "Descargar / Imprimir informe",
+    btnRestart: "Repetir el test",
+    dimNames: { V: "Visual", A: "Auditivo", R: "Lectura / Escritura", K: "Kinestésico" },
+    dimColors: { V: "#6366f1", A: "#f59e0b", R: "#10b981", K: "#ef4444" },
+    dimDesc: {
+      V: "Procesas la información mejor a través de imágenes, diagramas, colores y representaciones visuales. Tu mente crea mapas mentales y estructuras gráficas que hacen los conceptos claros y memorables.",
+      A: "Aprendes de forma eficaz escuchando, discutiendo y explicando en voz alta. El ritmo, el tono y la conversación son tus herramientas naturales para procesar información.",
+      R: "Prefieres información escrita, estructurada y detallada. Los apuntes, libros, listas y resúmenes son el medio en el que piensas con mayor claridad.",
+      K: "Aprendes haciendo. Necesitas experimentar, cometer errores y ajustar para que la información se vuelva real y utilizable. Los proyectos y la práctica directa son esenciales para ti."
+    },
+    dimTech: {
+      V: ["Mapas mentales", "Sketchnoting", "Apuntes con códigos de color", "Diagramas y diagramas de flujo", "Infografías", "Presentaciones visuales", "Tableros Kanban"],
+      A: ["Método teach-back (explicar a alguien)", "Grabaciones de audio de las lecciones", "Podcasts temáticos", "Discusiones y debates", "Rimas y ritmos mnemónicos", "Sesiones de Q&A en vivo", "Notas de voz después de aprender"],
+      R: ["Método Cornell para apuntes", "Resúmenes reformulados", "Tarjetas de texto (Anki)", "Lectura activa con anotaciones", "Diarios de aprendizaje", "Guias y documentacion", "Escribir artículos o tutoriales"],
+      K: ["Proyectos prácticos de aplicación inmediata", "Método Feynman aplicado", "Simulaciones y juegos de rol", "Ejercicios iterativos con retroalimentación rápida", "Hackathons y talleres", "Aprendizaje controlado basado en errores", "Prototipado rápido"]
+    },
+    socialDesc: {
+      independent: "Prefieres aprender solo, a tu propio ritmo, sin distracciones externas. La concentración profunda (deep work) es tu entorno óptimo.",
+      collaborative: "Aprendes mejor en interacción con otros. Los grupos de estudio, los compañeros de práctica y los mentores aceleran tu progreso.",
+      balanced: "Combinas bien el trabajo independiente con el aprendizaje colaborativo. Puedes adaptar tu estilo al contexto."
+    }
+  },
+
+  fr: {
+    logo: "Test de Profil d'Apprentissage",
+    heroTitle: "Découvrez comment vous apprenez le mieux",
+    heroDesc: "Un test basé sur le modèle VARK + préférence sociale, conçu pour tout domaine d'apprentissage : langues, programmation, musique, sport ou toute autre compétence.",
+    metaQ: "20 questions",
+    metaTime: "7-10 minutes",
+    metaFree: "Gratuit, sans compte",
+    startBtn: "Commencer le test",
+    qLabel: "Question",
+    qOf: "sur",
+    prevBtn: "Précédent",
+    nextBtn: "Suivant",
+    finishBtn: "Voir les résultats",
+    resTitle: "Votre profil d'apprentissage",
+    resSub: "D'après vos réponses, voici comment vous traitez et retenez l'information le plus efficacement.",
+    chartLabel: "Carte des styles",
+    scoresLabel: "Scores détaillés",
+    dominantTitle: "Votre style dominant",
+    secondTitle: "Style secondaire",
+    techniquesLabel: "Techniques recommandées",
+    socialLabel: "Préférence sociale",
+    socialIndep: "Indépendant",
+    socialCollab: "Collaboratif",
+    btnPrint: "Télécharger / Imprimer le rapport",
+    btnRestart: "Recommencer le test",
+    dimNames: { V: "Visuel", A: "Auditif", R: "Lecture / Écriture", K: "Kinesthésique" },
+    dimColors: { V: "#6366f1", A: "#f59e0b", R: "#10b981", K: "#ef4444" },
+    dimDesc: {
+      V: "Vous traitez l'information le mieux à travers des images, des diagrammes, des couleurs et des représentations visuelles. Votre esprit crée des cartes mentales et des structures graphiques qui rendent les concepts clairs et mémorables.",
+      A: "Vous apprenez efficacement en écoutant, en discutant et en expliquant à voix haute. Le rythme, le ton et la conversation sont vos outils naturels pour traiter l'information.",
+      R: "Vous préférez l'information écrite, structurée et détaillée. Les notes, les livres, les listes et les résumés sont le support dans lequel vous pensez le plus clairement.",
+      K: "Vous apprenez en faisant. Vous avez besoin d'expérimenter, de faire des erreurs et d'ajuster pour que l'information devienne réelle et utilisable. Les projets et la pratique directe vous sont indispensables."
+    },
+    dimTech: {
+      V: ["Cartes mentales", "Sketchnoting", "Notes avec codes couleur", "Diagrammes et organigrammes", "Infographies", "Présentations visuelles", "Tableaux Kanban"],
+      A: ["Méthode teach-back (expliquer à quelqu'un)", "Enregistrements audio des leçons", "Podcasts thématiques", "Discussions et débats", "Rimes et rythmes mnémotechniques", "Sessions Q&R en direct", "Mémos vocaux après l'apprentissage"],
+      R: ["Méthode Cornell pour les notes", "Résumés reformulés", "Fiches texte (Anki)", "Lecture active avec annotations", "Journaux d'apprentissage", "Guides et documentation", "Rédaction d'articles ou tutoriels"],
+      K: ["Projets pratiques à application immédiate", "Méthode Feynman appliquée", "Simulations et jeux de rôle", "Exercices itératifs avec retour rapide", "Hackathons et ateliers", "Apprentissage par l'erreur contrôlée", "Prototypage rapide"]
+    },
+    socialDesc: {
+      independent: "Vous préférez apprendre seul, à votre propre rythme, sans distractions extérieures. La concentration profonde (deep work) est votre environnement optimal.",
+      collaborative: "Vous apprenez mieux en interaction avec les autres. Les groupes d'étude, les partenaires de pratique et les mentors accélèrent vos progrès.",
+      balanced: "Vous combinez bien le travail indépendant avec l'apprentissage collaboratif. Vous pouvez adapter votre style au contexte."
+    }
+  }
+};
+
+const questions = [
+  // --- VARK Q1-16 ---
+  {
+    type: 'vark',
+    text: { ro: "Când înveți o aptitudine nouă (o limbă, un instrument, programare, un sport), cum preferi să începi?", en: "When learning a new skill (a language, instrument, coding, sport), how do you prefer to start?", de: "Wenn du eine neue Fähigkeit lernst (Sprache, Instrument, Programmierung, Sport), wie beginnst du am liebsten?", es: "Cuando aprendes una nueva habilidad (idioma, instrumento, programación, deporte), ¿cómo prefieres empezar?", fr: "Lorsque vous apprenez une nouvelle compétence (une langue, un instrument, la programmation, un sport), comment préférez-vous commencer ?" },
+    options: [
+      { style: 'V', text: { ro: "Urmăresc un tutorial video sau o demonstrație vizuală", en: "I watch a video tutorial or visual demonstration", de: "Ich schaue ein Video-Tutorial oder eine visuelle Demonstration", es: "Veo un tutorial en video o una demostración visual", fr: "Je regarde un tutoriel vidéo ou une démonstration visuelle" } },
+      { style: 'A', text: { ro: "Ascult o explicație sau un podcast pe tema respectivă", en: "I listen to an explanation or podcast on the topic", de: "Ich höre mir eine Erklärung oder einen Podcast zum Thema an", es: "Escucho una explicación o podcast sobre el tema", fr: "J'écoute une explication ou un podcast sur le sujet" } },
+      { style: 'R', text: { ro: "Citesc un ghid sau documentație structurată pas cu pas", en: "I read a structured guide or documentation step by step", de: "Ich lese eine strukturierte Anleitung oder Dokumentation Schritt für Schritt", es: "Leo una guía estructurada o documentación paso a paso", fr: "Je lis un guide structuré ou une documentation étape par étape" } },
+      { style: 'K', text: { ro: "Încerc direct, prin metoda încercare-eroare, fără să mă pregătesc prea mult", en: "I try directly, trial-and-error, without over-preparing", de: "Ich probiere direkt aus, nach Versuch-und-Irrtum-Methode, ohne zu viel vorzubereiten", es: "Lo intento directamente, por ensayo y error, sin prepararme demasiado", fr: "J'essaie directement, par tâtonnement, sans trop me préparer" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Când nu înțelegi un concept nou, prima ta reacție este să:", en: "When you don't understand a new concept, your first reaction is to:", de: "Wenn du ein neues Konzept nicht verstehst, ist deine erste Reaktion:", es: "Cuando no entiendes un concepto nuevo, tu primera reacción es:", fr: "Lorsque vous ne comprenez pas un nouveau concept, votre première réaction est de :" },
+    options: [
+      { style: 'V', text: { ro: "Caut un diagram, schemă sau video care să îl explice vizual", en: "Search for a diagram, chart, or video that explains it visually", de: "Nach einem Diagramm, Schema oder Video suchen, das es visuell erklärt", es: "Busco un diagrama, esquema o video que lo explique visualmente", fr: "Chercher un diagramme, un schéma ou une vidéo qui l'explique visuellement" } },
+      { style: 'A', text: { ro: "Explic problema cu voce tare sau o discut cu cineva", en: "Explain the problem out loud or discuss it with someone", de: "Das Problem laut erklären oder mit jemandem besprechen", es: "Explico el problema en voz alta o lo discuto con alguien", fr: "Expliquer le problème à voix haute ou en discuter avec quelqu'un" } },
+      { style: 'R', text: { ro: "Recitesc materialul sau caut mai multe articole și surse scrise", en: "Re-read the material or look for more articles and written sources", de: "Das Material erneut lesen oder mehr Artikel und schriftliche Quellen suchen", es: "Releo el material o busco más artículos y fuentes escritas", fr: "Relire le matériel ou chercher d'autres articles et sources écrites" } },
+      { style: 'K', text: { ro: "Încerc variante diferite până găsesc ce funcționează", en: "Try different approaches until I find what works", de: "Verschiedene Varianten ausprobieren, bis ich finde, was funktioniert", es: "Intento diferentes variantes hasta encontrar lo que funciona", fr: "Essayer différentes approches jusqu'à trouver ce qui fonctionne" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Ce format de curs sau training ți se pare cel mai eficient?", en: "What course or training format do you find most effective?", de: "Welches Kurs- oder Trainingsformat findest du am effektivsten?", es: "¿Qué formato de curso o entrenamiento te parece más efectivo?", fr: "Quel format de cours ou de formation vous semble le plus efficace ?" },
+    options: [
+      { style: 'V', text: { ro: "Video cu slide-uri, grafice și reprezentări vizuale", en: "Video with slides, graphics, and visual representations", de: "Video mit Folien, Grafiken und visuellen Darstellungen", es: "Video con diapositivas, gráficos y representaciones visuales", fr: "Vidéo avec diapositives, graphiques et représentations visuelles" } },
+      { style: 'A', text: { ro: "Webinar live sau podcast cu sesiuni de întrebări și răspunsuri", en: "Live webinar or podcast with Q&A sessions", de: "Live-Webinar oder Podcast mit Frage-Antwort-Sitzungen", es: "Webinar en vivo o podcast con sesiones de preguntas y respuestas", fr: "Webinaire en direct ou podcast avec sessions de questions-réponses" } },
+      { style: 'R', text: { ro: "Curs bazat pe text, cu articole, notițe și quiz-uri scrise", en: "Text-based course with articles, notes, and written quizzes", de: "Textbasierter Kurs mit Artikeln, Notizen und schriftlichen Quiz", es: "Curso basado en texto, con artículos, apuntes y cuestionarios escritos", fr: "Cours basé sur le texte avec articles, notes et quiz écrits" } },
+      { style: 'K', text: { ro: "Workshop practic sau proiecte cu aplicare imediată", en: "Practical workshop or projects with immediate application", de: "Praktischer Workshop oder Projekte mit sofortiger Anwendung", es: "Taller práctico o proyectos con aplicación inmediata", fr: "Atelier pratique ou projets avec application immédiate" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Cum îți amintești cel mai bine ceva ce ai învățat?", en: "How do you best remember something you've learned?", de: "Wie erinnerst du dich am besten an etwas, das du gelernt hast?", es: "¿Cómo recuerdas mejor algo que has aprendido?", fr: "Comment vous souvenez-vous le mieux de quelque chose que vous avez appris ?" },
+    options: [
+      { style: 'V', text: { ro: "Ca o imagine, schemă, culoare sau reprezentare vizuală", en: "As an image, diagram, color, or visual representation", de: "Als Bild, Schema, Farbe oder visuelle Darstellung", es: "Como una imagen, esquema, color o representación visual", fr: "Comme une image, un diagramme, une couleur ou une représentation visuelle" } },
+      { style: 'A', text: { ro: "Ca o voce, o explicație auzită sau un ritm / melodie", en: "As a voice, a heard explanation, or a rhythm / melody", de: "Als Stimme, eine gehörte Erklärung oder einen Rhythmus / eine Melodie", es: "Como una voz, una explicación escuchada o un ritmo / melodía", fr: "Comme une voix, une explication entendue ou un rythme / une mélodie" } },
+      { style: 'R', text: { ro: "Ca un text scris, o listă sau o definiție", en: "As written text, a list, or a definition", de: "Als geschriebener Text, eine Liste oder eine Definition", es: "Como texto escrito, una lista o una definición", fr: "Comme un texte écrit, une liste ou une définition" } },
+      { style: 'K', text: { ro: "Ca senzația de a face acel lucru sau o acțiune fizică asociată", en: "As the feeling of doing that thing or an associated physical action", de: "Als Gefühl, etwas zu tun oder eine damit verbundene körperliche Handlung", es: "Como la sensación de hacer esa cosa o una acción física asociada", fr: "Comme la sensation de faire cette chose ou une action physique associée" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Cum preferi să primești feedback pe progresul tău?", en: "How do you prefer to receive feedback on your progress?", de: "Wie möchtest du Feedback zu deinem Fortschritt erhalten?", es: "¿Cómo prefieres recibir retroalimentación sobre tu progreso?", fr: "Comment préférez-vous recevoir des retours sur vos progrès ?" },
+    options: [
+      { style: 'V', text: { ro: "Grafic de progres, dashboard vizual sau reprezentare a evoluției", en: "Progress graph, visual dashboard, or evolution representation", de: "Fortschrittsdiagramm, visuelles Dashboard oder Entwicklungsdarstellung", es: "Gráfico de progreso, panel visual o representación de la evolución", fr: "Graphique de progression, tableau de bord visuel ou représentation de l'évolution" } },
+      { style: 'A', text: { ro: "Conversație directă cu explicații verbale și exemple", en: "Direct conversation with verbal explanations and examples", de: "Direktes Gespräch mit mündlichen Erklärungen und Beispielen", es: "Conversación directa con explicaciones verbales y ejemplos", fr: "Conversation directe avec explications verbales et exemples" } },
+      { style: 'R', text: { ro: "Comentarii scrise detaliate și sugestii de îmbunătățire", en: "Detailed written comments and improvement suggestions", de: "Detaillierte schriftliche Kommentare und Verbesserungsvorschläge", es: "Comentarios escritos detallados y sugerencias de mejora", fr: "Commentaires écrits détaillés et suggestions d'amélioration" } },
+      { style: 'K', text: { ro: "Demonstrație practică a ce am făcut bine și ce trebuie corectat", en: "Practical demonstration of what I did well and what needs correction", de: "Praktische Demonstration dessen, was ich gut gemacht habe und was korrigiert werden muss", es: "Demostración práctica de lo que hice bien y lo que necesita corrección", fr: "Démonstration pratique de ce que j'ai bien fait et de ce qui doit être corrigé" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Ce tehnică de memorare folosești spontan când înveți ceva nou?", en: "What memorization technique do you use spontaneously when learning something new?", de: "Welche Merktechnik verwendest du spontan, wenn du etwas Neues lernst?", es: "¿Qué técnica de memorización usas espontáneamente cuando aprendes algo nuevo?", fr: "Quelle technique de mémorisation utilisez-vous spontanément lorsque vous apprenez quelque chose de nouveau ?" },
+    options: [
+      { style: 'V', text: { ro: "Fac mindmapuri, diagrame sau folosesc culori diferite pe notițe", en: "I create mind maps, diagrams, or use different colors in my notes", de: "Ich erstelle Mindmaps, Diagramme oder verwende verschiedene Farben in meinen Notizen", es: "Creo mapas mentales, diagramas o uso diferentes colores en mis apuntes", fr: "Je crée des cartes mentales, des diagrammes ou j'utilise différentes couleurs dans mes notes" } },
+      { style: 'A', text: { ro: "Repet cu voce tare sau fac asocieri sonore și rime", en: "I repeat out loud or make sound associations and rhymes", de: "Ich wiederhole laut oder mache Klangassoziationen und Reime", es: "Repito en voz alta o hago asociaciones de sonidos y rimas", fr: "Je répète à voix haute ou je crée des associations sonores et des rimes" } },
+      { style: 'R', text: { ro: "Scriu liste, fișe rezumative sau rescriu notițele", en: "I write lists, summary cards, or rewrite my notes", de: "Ich schreibe Listen, Zusammenfassungskarten oder schreibe meine Notizen um", es: "Escribo listas, fichas de resumen o reescribo mis apuntes", fr: "J'écris des listes, des fiches de résumé ou je réécris mes notes" } },
+      { style: 'K', text: { ro: "Aplic informația imediat într-un exercițiu sau proiect real", en: "I apply the information immediately in a real exercise or project", de: "Ich wende die Information sofort in einer echten Übung oder einem Projekt an", es: "Aplico la información de inmediato en un ejercicio o proyecto real", fr: "J'applique immédiatement l'information dans un vrai exercice ou projet" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Cum explici cel mai bine un concept cuiva care nu îl știe?", en: "How do you best explain a concept to someone who doesn't know it?", de: "Wie erklärst du am besten ein Konzept jemandem, der es nicht kennt?", es: "¿Cómo explicas mejor un concepto a alguien que no lo conoce?", fr: "Comment expliquez-vous le mieux un concept à quelqu'un qui ne le connaît pas ?" },
+    options: [
+      { style: 'V', text: { ro: "Desenez sau arăt o schemă, imagine sau grafic", en: "I draw or show a diagram, image, or graphic", de: "Ich zeichne oder zeige ein Diagramm, Bild oder Grafik", es: "Dibujo o muestro un diagrama, imagen o gráfico", fr: "Je dessine ou je montre un diagramme, une image ou un graphique" } },
+      { style: 'A', text: { ro: "Explic verbal cu exemple din viața reală și analogii", en: "I explain verbally with real-life examples and analogies", de: "Ich erkläre mündlich mit Beispielen aus dem Leben und Analogien", es: "Explico verbalmente con ejemplos de la vida real y analogías", fr: "J'explique verbalement avec des exemples concrets et des analogies" } },
+      { style: 'R', text: { ro: "Scriu pașii, trimit un articol sau un ghid structurat", en: "I write the steps, send an article, or a structured guide", de: "Ich schreibe die Schritte auf, sende einen Artikel oder eine strukturierte Anleitung", es: "Escribo los pasos, envío un artículo o una guía estructurada", fr: "J'écris les étapes, j'envoie un article ou un guide structuré" } },
+      { style: 'K', text: { ro: "Demonstrez practic și facem împreună, pas cu pas", en: "I demonstrate practically and we do it together, step by step", de: "Ich demonstriere praktisch und wir machen es gemeinsam, Schritt für Schritt", es: "Demuestro prácticamente y lo hacemos juntos, paso a paso", fr: "Je fais une démonstration pratique et nous le faisons ensemble, étape par étape" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "După o sesiune de învățare, cum verifici că ai înțeles cu adevărat materialul?", en: "After a learning session, how do you verify that you truly understood the material?", de: "Wie überprüfst du nach einer Lernsitzung, ob du das Material wirklich verstanden hast?", es: "Después de una sesión de aprendizaje, ¿cómo verificas que realmente has entendido el material?", fr: "Après une session d'apprentissage, comment vérifiez-vous que vous avez vraiment compris le matériel ?" },
+    options: [
+      { style: 'V', text: { ro: "Reconstruiesc mental schema sau imaginea conceptului fără să mă uit la material", en: "I mentally reconstruct the schema or image of the concept without looking at the material", de: "Ich rekonstruiere mental das Schema oder Bild des Konzepts, ohne auf das Material zu schauen", es: "Reconstruyo mentalmente el esquema o imagen del concepto sin mirar el material", fr: "Je reconstruis mentalement le schéma ou l'image du concept sans regarder le matériel" } },
+      { style: 'A', text: { ro: "Explic conceptul cu voce tare ca și cum aș preda altcuiva", en: "I explain the concept out loud as if I were teaching someone else", de: "Ich erkläre das Konzept laut, als ob ich es jemand anderem beibringen würde", es: "Explico el concepto en voz alta como si se lo estuviera enseñando a alguien más", fr: "J'explique le concept à voix haute comme si je l'enseignais à quelqu'un d'autre" } },
+      { style: 'R', text: { ro: "Rescriu sau reformulez principalele idei în cuvintele mele", en: "I rewrite or reformulate the main ideas in my own words", de: "Ich schreibe die Hauptideen in meinen eigenen Worten um oder formuliere sie um", es: "Reescribo o reformulo las ideas principales con mis propias palabras", fr: "Je réécris ou reformule les idées principales avec mes propres mots" } },
+      { style: 'K', text: { ro: "Încerc să aplic imediat ce am învățat într-un exercițiu concret", en: "I try to immediately apply what I've learned in a concrete exercise", de: "Ich versuche, das Gelernte sofort in einer konkreten Übung anzuwenden", es: "Intento aplicar de inmediato lo que he aprendido en un ejercicio concreto", fr: "J'essaie d'appliquer immédiatement ce que j'ai appris dans un exercice concret" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Ce tip de resursă găsești cel mai valoroasă când înveți ceva?", en: "What type of resource do you find most valuable when learning something?", de: "Welche Art von Ressource findest du beim Lernen am wertvollsten?", es: "¿Qué tipo de recurso encuentras más valioso cuando aprendes algo?", fr: "Quel type de ressource trouvez-vous le plus utile lorsque vous apprenez quelque chose ?" },
+    options: [
+      { style: 'V', text: { ro: "Infografice, prezentări cu grafice, diagrame sau animații", en: "Infographics, presentations with charts, diagrams, or animations", de: "Infografiken, Präsentationen mit Grafiken, Diagrammen oder Animationen", es: "Infografías, presentaciones con gráficos, diagramas o animaciones", fr: "Infographies, présentations avec graphiques, diagrammes ou animations" } },
+      { style: 'A', text: { ro: "Podcasturi, interviuri, discuții sau lecții audio", en: "Podcasts, interviews, discussions, or audio lessons", de: "Podcasts, Interviews, Diskussionen oder Audiolektionen", es: "Podcasts, entrevistas, discusiones o lecciones de audio", fr: "Podcasts, interviews, discussions ou leçons audio" } },
+      { style: 'R', text: { ro: "Cărți, articole, documentații sau ghiduri scrise", en: "Books, articles, documentation, or written guides", de: "Bücher, Artikel, Dokumentationen oder schriftliche Anleitungen", es: "Libros, artículos, documentación o guías escritas", fr: "Livres, articles, documentation ou guides écrits" } },
+      { style: 'K', text: { ro: "Workshopuri, simulări, proiecte sau exerciții practice", en: "Workshops, simulations, projects, or practical exercises", de: "Workshops, Simulationen, Projekte oder praktische Übungen", es: "Talleres, simulaciones, proyectos o ejercicios prácticos", fr: "Ateliers, simulations, projets ou exercices pratiques" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Când înveți o procedură nouă (ex: un software, o rețetă, o tehnică sportivă), ce te ajută mai mult?", en: "When learning a new procedure (e.g., software, recipe, sports technique), what helps you most?", de: "Wenn du ein neues Verfahren lernst (z.B. Software, Rezept, Sporttechnik), was hilft dir am meisten?", es: "Cuando aprendes un procedimiento nuevo (ej: software, receta, técnica deportiva), ¿qué te ayuda más?", fr: "Lorsque vous apprenez une nouvelle procédure (ex : logiciel, recette, technique sportive), qu'est-ce qui vous aide le plus ?" },
+    options: [
+      { style: 'V', text: { ro: "Să urmăresc pe altcineva cum îl execută (demo vizual)", en: "Watching someone else execute it (visual demo)", de: "Jemand anderen dabei zuzuschauen, wie er es ausführt (visuelle Demo)", es: "Ver a alguien más ejecutarlo (demo visual)", fr: "Observer quelqu'un d'autre l'exécuter (démo visuelle)" } },
+      { style: 'A', text: { ro: "Să ascult instrucțiunile verbale pas cu pas", en: "Listening to step-by-step verbal instructions", de: "Schritt-für-Schritt-Anweisungen mündlich zuzuhören", es: "Escuchar las instrucciones verbales paso a paso", fr: "Écouter les instructions verbales étape par étape" } },
+      { style: 'R', text: { ro: "Să citesc descrierea tehnică scrisă a pașilor", en: "Reading the written technical description of the steps", de: "Die schriftliche technische Beschreibung der Schritte zu lesen", es: "Leer la descripción técnica escrita de los pasos", fr: "Lire la description technique écrite des étapes" } },
+      { style: 'K', text: { ro: "Să încerc direct și să ajustez pe măsură ce practic", en: "Trying directly and adjusting as I practice", de: "Direkt ausprobieren und beim Üben anpassen", es: "Intentarlo directamente y ajustar mientras practico", fr: "Essayer directement et ajuster en pratiquant" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Cum îți organizezi informațiile pe care le înveți?", en: "How do you organize the information you learn?", de: "Wie organisierst du die Informationen, die du lernst?", es: "¿Cómo organizas la información que aprendes?", fr: "Comment organisez-vous les informations que vous apprenez ?" },
+    options: [
+      { style: 'V', text: { ro: "Cu scheme, săgeți, culori și imagini (mindmap, tablou, etc.)", en: "With diagrams, arrows, colors, and images (mind map, board, etc.)", de: "Mit Schemata, Pfeilen, Farben und Bildern (Mindmap, Tafel usw.)", es: "Con esquemas, flechas, colores e imágenes (mapa mental, tablero, etc.)", fr: "Avec des schémas, des flèches, des couleurs et des images (carte mentale, tableau, etc.)" } },
+      { style: 'A', text: { ro: "Prin discuții sau înregistrări audio ale lecțiilor", en: "Through discussions or audio recordings of lessons", de: "Durch Diskussionen oder Audioaufnahmen der Lektionen", es: "A través de discusiones o grabaciones de audio de las lecciones", fr: "Par des discussions ou des enregistrements audio des leçons" } },
+      { style: 'R', text: { ro: "Cu notițe structurate, tabele, liste și rezumate scrise", en: "With structured notes, tables, lists, and written summaries", de: "Mit strukturierten Notizen, Tabellen, Listen und schriftlichen Zusammenfassungen", es: "Con apuntes estructurados, tablas, listas y resúmenes escritos", fr: "Avec des notes structurées, des tableaux, des listes et des résumés écrits" } },
+      { style: 'K', text: { ro: "Cu proiecte concrete sau experimente pe care le fac și le salvez", en: "With concrete projects or experiments that I do and save", de: "Mit konkreten Projekten oder Experimenten, die ich mache und speichere", es: "Con proyectos concretos o experimentos que hago y guardo", fr: "Avec des projets concrets ou des expériences que je réalise et conserve" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Când trebuie să înveți ceva rapid și eficient, alegi:", en: "When you need to learn something quickly and efficiently, you choose:", de: "Wenn du etwas schnell und effizient lernen musst, wählst du:", es: "Cuando necesitas aprender algo rápido y eficientemente, eliges:", fr: "Lorsque vous devez apprendre quelque chose rapidement et efficacement, vous choisissez :" },
+    options: [
+      { style: 'V', text: { ro: "Un tutorial video scurt, clar și bine structurat vizual", en: "A short, clear, visually well-structured video tutorial", de: "Ein kurzes, klares und visuell gut strukturiertes Video-Tutorial", es: "Un tutorial en video corto, claro y bien estructurado visualmente", fr: "Un tutoriel vidéo court, clair et bien structuré visuellement" } },
+      { style: 'A', text: { ro: "O explicație audio sau o conversație cu cineva experimentat", en: "An audio explanation or conversation with someone experienced", de: "Eine Audioerklärung oder ein Gespräch mit jemandem Erfahrenem", es: "Una explicación de audio o conversación con alguien experimentado", fr: "Une explication audio ou une conversation avec quelqu'un d'expérimenté" } },
+      { style: 'R', text: { ro: "Un articol bine structurat, un cheat sheet sau o documentație clară", en: "A well-structured article, cheat sheet, or clear documentation", de: "Einen gut strukturierten Artikel, ein Cheat Sheet oder eine klare Dokumentation", es: "Un artículo bien estructurado, cheat sheet o documentación clara", fr: "Un article bien structuré, un aide-mémoire ou une documentation claire" } },
+      { style: 'K', text: { ro: "Să încerc să fac direct și să învăț din greșeli în timp real", en: "To try doing it directly and learn from mistakes in real time", de: "Direkt zu versuchen, es zu tun und in Echtzeit aus Fehlern zu lernen", es: "Intentar hacerlo directamente y aprender de los errores en tiempo real", fr: "Essayer de le faire directement et apprendre des erreurs en temps réel" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "În ce situație te simți cel mai competent și sigur pe tine?", en: "In what situation do you feel most competent and confident?", de: "In welcher Situation fühlst du dich am kompetentesten und sichersten?", es: "¿En qué situación te sientes más competente y seguro?", fr: "Dans quelle situation vous sentez-vous le plus compétent et confiant ?" },
+    options: [
+      { style: 'V', text: { ro: "Când pot vedea clar structura și contextul vizual al unui subiect", en: "When I can clearly see the structure and visual context of a subject", de: "Wenn ich die Struktur und den visuellen Kontext eines Themas klar sehen kann", es: "Cuando puedo ver claramente la estructura y el contexto visual de un tema", fr: "Lorsque je peux clairement voir la structure et le contexte visuel d'un sujet" } },
+      { style: 'A', text: { ro: "Când pot discuta liber și asculta păreri diverse", en: "When I can discuss freely and listen to diverse opinions", de: "Wenn ich frei diskutieren und verschiedene Meinungen anhören kann", es: "Cuando puedo discutir libremente y escuchar opiniones diversas", fr: "Lorsque je peux discuter librement et écouter des opinions diverses" } },
+      { style: 'R', text: { ro: "Când am acces la resurse scrise bogate și documentație clară", en: "When I have access to rich written resources and clear documentation", de: "Wenn ich Zugang zu umfangreichen schriftlichen Ressourcen und klarer Dokumentation habe", es: "Cuando tengo acceso a recursos escritos ricos y documentación clara", fr: "Lorsque j'ai accès à de riches ressources écrites et une documentation claire" } },
+      { style: 'K', text: { ro: "Când pot experimenta și itera liber fără restricții de teorie", en: "When I can experiment and iterate freely without theory restrictions", de: "Wenn ich frei experimentieren und iterieren kann, ohne Theoriebeschränkungen", es: "Cuando puedo experimentar e iterar libremente sin restricciones de teoría", fr: "Lorsque je peux expérimenter et itérer librement sans contraintes théoriques" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Cum înțelegi cel mai bine un concept abstract (ex: inteligență artificială, economia de piață, armonie muzicală)?", en: "How do you best understand an abstract concept (e.g., AI, market economy, musical harmony)?", de: "Wie verstehst du am besten ein abstraktes Konzept (z.B. KI, Marktwirtschaft, musikalische Harmonie)?", es: "¿Cómo entiendes mejor un concepto abstracto (ej: inteligencia artificial, economía de mercado, armonía musical)?", fr: "Comment comprenez-vous le mieux un concept abstrait (ex : intelligence artificielle, économie de marché, harmonie musicale) ?" },
+    options: [
+      { style: 'V', text: { ro: "Printr-o metaforă vizuală, animație sau diagramă care îl ilustrează", en: "Through a visual metaphor, animation, or diagram that illustrates it", de: "Durch eine visuelle Metapher, Animation oder ein Diagramm, das es veranschaulicht", es: "A través de una metáfora visual, animación o diagrama que lo ilustra", fr: "Par une métaphore visuelle, une animation ou un diagramme qui l'illustre" } },
+      { style: 'A', text: { ro: "Printr-un exemplu concret explicat verbal, cu analogii din viața reală", en: "Through a concrete example explained verbally, with real-life analogies", de: "Durch ein konkret mündlich erklärtes Beispiel mit Analogien aus dem Leben", es: "A través de un ejemplo concreto explicado verbalmente, con analogías de la vida real", fr: "Par un exemple concret expliqué verbalement, avec des analogies de la vie réelle" } },
+      { style: 'R', text: { ro: "Printr-o definiție clară, argumente scrise și exemple în text", en: "Through a clear definition, written arguments, and text examples", de: "Durch eine klare Definition, schriftliche Argumente und Textbeispiele", es: "A través de una definición clara, argumentos escritos y ejemplos en texto", fr: "Par une définition claire, des arguments écrits et des exemples textuels" } },
+      { style: 'K', text: { ro: "Prin simularea, aplicarea sau experimentarea directă a conceptului", en: "Through simulating, applying, or directly experimenting with the concept", de: "Durch Simulieren, Anwenden oder direktes Experimentieren mit dem Konzept", es: "A través de simular, aplicar o experimentar directamente el concepto", fr: "En simulant, appliquant ou expérimentant directement le concept" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "Ce te frustrează cel mai mult într-un curs sau sesiune de training?", en: "What frustrates you most in a course or training session?", de: "Was frustriert dich am meisten in einem Kurs oder einer Trainingssitzung?", es: "¿Qué te frustra más en un curso o sesión de entrenamiento?", fr: "Qu'est-ce qui vous frustre le plus dans un cours ou une session de formation ?" },
+    options: [
+      { style: 'V', text: { ro: "Prea mult text dens, fără nicio organizare vizuală sau grafice", en: "Too much dense text, with no visual organization or graphics", de: "Zu viel dichter Text, ohne visuelle Organisation oder Grafiken", es: "Demasiado texto denso, sin organización visual ni gráficos", fr: "Trop de texte dense, sans organisation visuelle ni graphiques" } },
+      { style: 'A', text: { ro: "Lipsa de interacțiune, totul în scris fără nicio explicație verbală", en: "Lack of interaction, everything in writing with no verbal explanation", de: "Mangelnde Interaktion, alles schriftlich ohne mündliche Erklärung", es: "Falta de interacción, todo por escrito sin explicación verbal", fr: "Manque d'interaction, tout par écrit sans aucune explication verbale" } },
+      { style: 'R', text: { ro: "Resurse superficiale, fără profunzime sau documentație serioasă", en: "Superficial resources, without depth or serious documentation", de: "Oberflächliche Ressourcen, ohne Tiefe oder ernsthafte Dokumentation", es: "Recursos superficiales, sin profundidad ni documentación seria", fr: "Ressources superficielles, sans profondeur ni documentation sérieuse" } },
+      { style: 'K', text: { ro: "Prea multă teorie fără nicio aplicație practică sau exercițiu concret", en: "Too much theory with no practical application or concrete exercise", de: "Zu viel Theorie ohne praktische Anwendung oder konkrete Übung", es: "Demasiada teoría sin ninguna aplicación práctica o ejercicio concreto", fr: "Trop de théorie sans aucune application pratique ni exercice concret" } }
+    ]
+  },
+  {
+    type: 'vark',
+    text: { ro: "După o ședință de training intensiv, ce reții cel mai bine?", en: "After an intensive training session, what do you retain best?", de: "Was behältst du nach einer intensiven Trainingssitzung am besten?", es: "Después de una sesión de entrenamiento intensivo, ¿qué retienes mejor?", fr: "Après une session de formation intensive, qu'est-ce que vous retenez le mieux ?" },
+    options: [
+      { style: 'V', text: { ro: "Slide-urile, graficele și reprezentările vizuale prezentate", en: "The slides, graphics, and visual representations shown", de: "Die gezeigten Folien, Grafiken und visuellen Darstellungen", es: "Las diapositivas, gráficos y representaciones visuales mostradas", fr: "Les diapositives, graphiques et représentations visuelles présentés" } },
+      { style: 'A', text: { ro: "Discuțiile, exemplele verbale și poveștile spuse de trainer", en: "The discussions, verbal examples, and stories told by the trainer", de: "Die Diskussionen, mündlichen Beispiele und Geschichten des Trainers", es: "Las discusiones, ejemplos verbales e historias contadas por el formador", fr: "Les discussions, exemples verbaux et histoires racontés par le formateur" } },
+      { style: 'R', text: { ro: "Notițele luate și materialele scrise primite", en: "The notes I took and the written materials received", de: "Die gemachten Notizen und die erhaltenen schriftlichen Materialien", es: "Los apuntes que tomé y los materiales escritos recibidos", fr: "Les notes prises et les matériaux écrits reçus" } },
+      { style: 'K', text: { ro: "Exercițiile practice și activitățile în care am participat activ", en: "The practical exercises and activities in which I actively participated", de: "Die praktischen Übungen und Aktivitäten, an denen ich aktiv teilgenommen habe", es: "Los ejercicios prácticos y actividades en los que participé activamente", fr: "Les exercices pratiques et activités auxquels j'ai activement participé" } }
+    ]
+  },
+  // --- SOCIAL Q17-20 ---
+  {
+    type: 'social',
+    text: { ro: "Când înveți ceva nou, preferi:", en: "When learning something new, you prefer:", de: "Wenn du etwas Neues lernst, bevorzugst du:", es: "Cuando aprendes algo nuevo, prefieres:", fr: "Lorsque vous apprenez quelque chose de nouveau, vous préférez :" },
+    options: [
+      { style: 'S', text: { ro: "Să lucrezi cu un coleg, mentor sau grup de studiu", en: "Working with a colleague, mentor, or study group", de: "Mit einem Kollegen, Mentor oder Lerngruppe zu arbeiten", es: "Trabajar con un colega, mentor o grupo de estudio", fr: "Travailler avec un collègue, un mentor ou un groupe d'étude" } },
+      { style: 'I', text: { ro: "Să înveți singur, în propriul ritm și spațiu", en: "Learning alone, at your own pace and space", de: "Alleine zu lernen, in eigenem Tempo und Raum", es: "Aprender solo, a tu propio ritmo y espacio", fr: "Apprendre seul, à votre propre rythme et dans votre propre espace" } }
+    ]
+  },
+  {
+    type: 'social',
+    text: { ro: "Când ești blocat într-o problemă și nu găsești soluția:", en: "When you're stuck on a problem and can't find the solution:", de: "Wenn du bei einem Problem feststeckst und die Lösung nicht findest:", es: "Cuando estás atascado en un problema y no encuentras la solución:", fr: "Lorsque vous êtes bloqué sur un problème et ne trouvez pas la solution :" },
+    options: [
+      { style: 'S', text: { ro: "Ceri ajutorul cuiva de îndată ce simți că ești blocat", en: "You ask for help from someone as soon as you feel stuck", de: "Du bittest jemanden um Hilfe, sobald du merkst, dass du feststeckst", es: "Pides ayuda a alguien en cuanto te sientes atascado", fr: "Vous demandez de l'aide à quelqu'un dès que vous vous sentez bloqué" } },
+      { style: 'I', text: { ro: "Încerci să rezolvi singur cât mai mult posibil înainte să ceri ajutor", en: "You try to solve it alone as much as possible before asking for help", de: "Du versuchst, es so weit wie möglich alleine zu lösen, bevor du um Hilfe bittest", es: "Intentas resolverlo solo tanto como sea posible antes de pedir ayuda", fr: "Vous essayez de le résoudre seul autant que possible avant de demander de l'aide" } }
+    ]
+  },
+  {
+    type: 'social',
+    text: { ro: "Ce tip de mediu de învățare ți se potrivește mai bine?", en: "What type of learning environment suits you better?", de: "Welche Art von Lernumgebung passt besser zu dir?", es: "¿Qué tipo de entorno de aprendizaje te sienta mejor?", fr: "Quel type d'environnement d'apprentissage vous convient le mieux ?" },
+    options: [
+      { style: 'S', text: { ro: "Un grup de studiu, o comunitate de practică sau un partener de învățare", en: "A study group, practice community, or learning partner", de: "Eine Lerngruppe, Praxisgemeinschaft oder ein Lernpartner", es: "Un grupo de estudio, comunidad de práctica o compañero de aprendizaje", fr: "Un groupe d'étude, une communauté de pratique ou un partenaire d'apprentissage" } },
+      { style: 'I', text: { ro: "Un spațiu liniștit, singur cu materialele mele, fără întreruperi", en: "A quiet space, alone with my materials, without interruptions", de: "Ein ruhiger Ort, allein mit meinen Materialien, ohne Unterbrechungen", es: "Un espacio tranquilo, solo con mis materiales, sin interrupciones", fr: "Un espace calme, seul avec mes matériaux, sans interruptions" } }
+    ]
+  },
+  {
+    type: 'social',
+    text: { ro: "Cum preferi să îți măsori progresul într-o competență nouă?", en: "How do you prefer to measure your progress in a new skill?", de: "Wie misst du am liebsten deinen Fortschritt bei einer neuen Fähigkeit?", es: "¿Cómo prefieres medir tu progreso en una nueva habilidad?", fr: "Comment préférez-vous mesurer vos progrès dans une nouvelle compétence ?" },
+    options: [
+      { style: 'S', text: { ro: "Prin comparație cu alții, feedback de la colegi sau evaluare externă", en: "By comparison with others, peer feedback, or external evaluation", de: "Durch Vergleich mit anderen, Peer-Feedback oder externe Bewertung", es: "Por comparación con otros, retroalimentación de pares o evaluación externa", fr: "Par comparaison avec les autres, retours de pairs ou évaluation externe" } },
+      { style: 'I', text: { ro: "Prin autoevaluare, jurnale personale sau comparație cu versiunea mea anterioară", en: "Through self-assessment, personal journals, or comparison with my previous self", de: "Durch Selbstbewertung, persönliche Tagebücher oder Vergleich mit meiner früheren Version", es: "A través de la autoevaluación, diarios personales o comparación con mi yo anterior", fr: "Par auto-évaluation, journaux personnels ou comparaison avec ma version antérieure" } }
+    ]
+  }
+];
+
+// Add instruction text to T
+Object.keys(T).forEach(l => {
+  const inst = {
+    ro: 'Trage bara pentru fiecare variantă — 0 = nu mă descrie, 5 = mă descrie perfect',
+    en: 'Drag each bar — 0 = does not describe me, 5 = describes me perfectly',
+    de: 'Schieberegler ziehen — 0 = beschreibt mich nicht, 5 = beschreibt mich perfekt',
+    es: 'Desliza cada barra — 0 = no me describe, 5 = me describe perfectamente',
+    fr: 'Faites glisser chaque barre — 0 = ne me décrit pas, 5 = me décrit parfaitement'
+  };
+  const instSocial = {
+    ro: 'Trage bara spre polul care te descrie cel mai bine',
+    en: 'Drag the bar toward the pole that best describes you',
+    de: 'Schieber in Richtung des Pols ziehen, der dich am besten beschreibt',
+    es: 'Desliza hacia el polo que mejor te describe',
+    fr: 'Faites glisser vers le pôle qui vous décrit le mieux'
+  };
+  T[l].instruction = inst[l] || inst.en;
+  T[l].instructionSocial = instSocial[l] || instSocial.en;
+});
+
+// STATE
+let lang = 'ro';
+let currentQ = 0;
+let answers = {}; // { qIndex: { optIndex: 0-5 } } for vark; { qIndex: 0-10 } for social
+let radarChart = null;
+
+const DIM_COLORS = { V:'#6366f1', A:'#f59e0b', R:'#10b981', K:'#ef4444' };
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  renderHero();
+  if (document.getElementById('quiz-section').style.display !== 'none') renderQuestion();
+  if (document.getElementById('results-section').style.display !== 'none') showResults();
+}
+
+function t(key) { return T[lang][key] || ''; }
+
+function renderHero() {
+  document.getElementById('logo-text').textContent = t('logo');
+  document.getElementById('hero-title').textContent = t('heroTitle');
+  document.getElementById('hero-desc').textContent = t('heroDesc');
+  document.getElementById('meta-q').textContent = t('metaQ');
+  document.getElementById('meta-time').textContent = t('metaTime');
+  document.getElementById('meta-free').textContent = t('metaFree');
+  document.getElementById('start-btn').textContent = t('startBtn');
+}
+
+function startQuiz() {
+  document.getElementById('hero-section').style.display = 'none';
+  document.getElementById('quiz-section').style.display = 'block';
+  currentQ = 0;
+  answers = {};
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const total = questions.length;
+  const pct = Math.round((currentQ / total) * 100);
+
+  document.getElementById('q-counter').textContent = t('qLabel') + ' ' + (currentQ+1) + ' ' + t('qOf') + ' ' + total;
+  document.getElementById('q-percent').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-label').textContent = q.type === 'social' ? t('socialLabel') : 'VARK';
+  document.getElementById('q-text').textContent = q.text[lang];
+
+  const instrEl = document.getElementById('q-instruction');
+  instrEl.textContent = q.type === 'social' ? t('instructionSocial') : t('instruction');
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+
+  if (q.type === 'vark') {
+    const wrap = document.createElement('div');
+    wrap.className = 'options-sliders';
+    if (!answers[currentQ]) answers[currentQ] = {};
+
+    q.options.forEach((opt, i) => {
+      const val = answers[currentQ][i] !== undefined ? answers[currentQ][i] : 0;
+      const color = DIM_COLORS[opt.style];
+      const row = document.createElement('div');
+      row.className = 'opt-row';
+      row.innerHTML = `
+        <div class="opt-header">
+          <span class="opt-dot" style="background:${color}"></span>
+          <span class="opt-text-label">${opt.text[lang]}</span>
+        </div>
+        <div class="slider-wrap">
+          <span class="slider-min">0</span>
+          <input type="range" min="0" max="5" step="1" value="${val}" 
+            style="--thumb-color:${color}" 
+            oninput="updateSlider(this,${i},'${opt.style}','${color}')">
+          <span class="slider-max">5</span>
+          <span class="slider-val" id="sv-${i}" style="color:${color}">${val}</span>
+        </div>`;
+      // Set thumb color
+      const inp = row.querySelector('input');
+      inp.style.setProperty('--thumb-color', color);
+      inp.addEventListener('input', function() { updateSlider(this, i, opt.style, color); });
+      inp.removeAttribute('oninput');
+      updateSliderBg(inp, val, color);
+      wrap.appendChild(row);
+    });
+    container.appendChild(wrap);
+
+  } else {
+    // Social: single spectrum slider 0-10
+    const val = answers[currentQ] !== undefined ? answers[currentQ] : 5;
+    const div = document.createElement('div');
+    div.className = 'social-spectrum';
+    div.innerHTML = `
+      <div class="spectrum-labels">
+        <span class="spectrum-label">${q.options[1].text[lang]}</span>
+        <span class="spectrum-label right">${q.options[0].text[lang]}</span>
+      </div>
+      <input type="range" min="0" max="10" step="1" value="${val}" id="social-slider" style="width:100%">
+    `;
+    container.appendChild(div);
+    const sl = div.querySelector('input');
+    updateSliderBg(sl, val, '#8b5cf6', 10);
+    sl.addEventListener('input', function() {
+      answers[currentQ] = parseInt(this.value);
+      updateSliderBg(this, parseInt(this.value), '#8b5cf6', 10);
+    });
+    answers[currentQ] = val;
+  }
+
+  document.getElementById('btn-prev').textContent = t('prevBtn');
+  document.getElementById('btn-prev').disabled = currentQ === 0;
+  document.getElementById('btn-next').textContent = currentQ === total-1 ? t('finishBtn') : t('nextBtn');
+}
+
+function updateSlider(inp, i, style, color) {
+  const val = parseInt(inp.value);
+  if (!answers[currentQ]) answers[currentQ] = {};
+  answers[currentQ][i] = val;
+  const valEl = document.getElementById('sv-'+i);
+  if (valEl) { valEl.textContent = val; }
+  updateSliderBg(inp, val, color);
+}
+
+function updateSliderBg(inp, val, color, max) {
+  max = max || 5;
+  const pct = (val / max) * 100;
+  inp.style.background = `linear-gradient(to right, ${color} ${pct}%, #e2e8f0 ${pct}%)`;
+  inp.style.setProperty('accent-color', color);
+}
+
+function nextQ() {
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+    window.scrollTo(0,0);
+  } else {
+    showResults();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); window.scrollTo(0,0); }
+}
+
+function restartQuiz() {
+  document.getElementById('results-section').style.display = 'none';
+  document.getElementById('hero-section').style.display = 'block';
+  if (radarChart) { radarChart.destroy(); radarChart = null; }
+  window.scrollTo(0,0);
+}
+
+function showResults() {
+  // Score VARK: sum slider values per dimension
+  const scores = { V:0, A:0, R:0, K:0 };
+  let socialSum = 0, socialCount = 0;
+
+  questions.forEach((q, qi) => {
+    const ans = answers[qi];
+    if (ans === undefined || ans === null) return;
+    if (q.type === 'vark') {
+      if (typeof ans === 'object') {
+        q.options.forEach((opt, i) => {
+          scores[opt.style] = (scores[opt.style] || 0) + (ans[i] || 0);
+        });
+      }
+    } else {
+      socialSum += (typeof ans === 'number' ? ans : 5);
+      socialCount++;
+    }
+  });
+
+  const totalVark = Object.values(scores).reduce((a,b) => a+b, 0) || 1;
+  const pcts = {
+    V: Math.round(scores.V / totalVark * 100),
+    A: Math.round(scores.A / totalVark * 100),
+    R: Math.round(scores.R / totalVark * 100),
+    K: Math.round(scores.K / totalVark * 100)
+  };
+
+  const sorted = Object.entries(pcts).sort((a,b) => b[1]-a[1]);
+  const [dom, domPct] = sorted[0];
+  const [sec, secPct] = sorted[1];
+  const socialPct = socialCount > 0 ? Math.round(socialSum / (socialCount * 10) * 100) : 50;
+  const socialType = socialPct >= 65 ? 'collaborative' : (socialPct <= 35 ? 'independent' : 'balanced');
+
+  document.getElementById('quiz-section').style.display = 'none';
+  document.getElementById('results-section').style.display = 'block';
+  window.scrollTo(0,0);
+
+  const tl = T[lang];
+  document.getElementById('res-title').textContent = t('resTitle');
+  document.getElementById('res-sub').textContent = t('resSub');
+  document.getElementById('chart-label').textContent = t('chartLabel');
+  document.getElementById('scores-label').textContent = t('scoresLabel');
+  document.getElementById('btn-print').textContent = t('btnPrint');
+  document.getElementById('btn-restart').textContent = t('btnRestart');
+
+  document.getElementById('dominant-area').innerHTML =
+    buildStyleCard(dom, domPct, true, tl) + buildStyleCard(sec, secPct, false, tl);
+
+  document.getElementById('social-area').innerHTML = `
+    <div class="social-card">
+      <h3>${tl.socialLabel}</h3>
+      <div class="social-labels">
+        <span>${tl.socialIndep}</span>
+        <span>${tl.socialCollab}</span>
+      </div>
+      <div class="social-track">
+        <div class="social-fill" style="width:${socialPct}%"></div>
+      </div>
+      <p style="color:var(--muted);font-size:.88rem;margin-top:8px">${tl.socialDesc[socialType]}</p>
+    </div>`;
+
+  const barContainer = document.getElementById('score-bars');
+  barContainer.innerHTML = '';
+  sorted.forEach(([style, pct]) => {
+    const color = tl.dimColors[style];
+    barContainer.innerHTML += `
+      <div class="score-row">
+        <div class="score-row-header">
+          <span class="score-name" style="color:${color}">${tl.dimNames[style]}</span>
+          <span class="score-pct" style="color:${color}">${pct}%</span>
+        </div>
+        <div class="score-track"><div class="score-fill" style="width:${pct}%;background:${color}"></div></div>
+      </div>`;
+  });
+
+  if (radarChart) radarChart.destroy();
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: [tl.dimNames.V, tl.dimNames.A, tl.dimNames.R, tl.dimNames.K],
+      datasets: [{
+        data: [pcts.V, pcts.A, pcts.R, pcts.K],
+        backgroundColor: 'rgba(79,70,229,0.15)',
+        borderColor: '#4f46e5',
+        borderWidth: 2,
+        pointBackgroundColor: [tl.dimColors.V, tl.dimColors.A, tl.dimColors.R, tl.dimColors.K],
+        pointRadius: 5
+      }]
+    },
+    options: {
+      scales: { r: { min:0, max:100, ticks:{display:false}, grid:{color:'#e2e8f0'}, pointLabels:{font:{size:11,weight:'600'}} } },
+      plugins: { legend:{display:false} }
+    }
+  });
+}
+
+function buildStyleCard(style, pct, isDominant, tl) {
+  const color = tl.dimColors[style];
+  const title = isDominant ? tl.dominantTitle : tl.secondTitle;
+  const techs = tl.dimTech[style].map(t => `<span class="technique-chip">${t}</span>`).join('');
+  return `
+    <div class="dominant-card" style="border-left:4px solid ${color}">
+      <span class="dominant-badge" style="background:${color}22;color:${color}">${title} &bull; ${pct}%</span>
+      <h3 style="color:${color}">${tl.dimNames[style]}</h3>
+      <p>${tl.dimDesc[style]}</p>
+      <div style="font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">${tl.techniquesLabel}</div>
+      <div class="techniques-list">${techs}</div>
+    </div>`;
+}
+
+renderHero();
+</script>
+</body>
+</html>

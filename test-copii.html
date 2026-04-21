@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Cum inveti tu? | Ella Languages</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pr:#7c3aed;--pl:#ede9fe;--bg:#faf5ff;--white:#fff;--text:#1e1b4b;--mu:#6b7280;--bo:#e5e7eb;--V:#6366f1;--A:#f59e0b;--R:#10b981;--K:#ef4444}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-text-size-adjust:100%}
+.hdr{background:var(--white);border-bottom:2px solid var(--pl);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;gap:10px}
+.brand{display:flex;flex-direction:column;line-height:1.15}
+.bname{font-size:1rem;font-weight:900;color:var(--pr)}
+.bsub{font-size:.6rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.09em}
+.langs{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0}
+.lb{border:2px solid var(--bo);background:var(--white);color:var(--mu);padding:5px 10px;border-radius:8px;cursor:pointer;font-size:.76rem;font-weight:700;min-height:34px;-webkit-tap-highlight-color:transparent}
+.lb.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+.hero{max-width:520px;margin:36px auto 0;padding:0 16px 48px;text-align:center}
+.hero-ico{font-size:2.8rem;margin-bottom:10px;display:block}
+.hero h1{font-size:1.75rem;font-weight:900;margin-bottom:12px;line-height:1.25;color:var(--pr)}
+.hero p{color:var(--mu);font-size:.97rem;line-height:1.65;margin-bottom:24px}
+.btn{background:var(--pr);color:#fff;border:none;padding:15px 28px;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;width:100%;max-width:300px;min-height:52px;-webkit-tap-highlight-color:transparent;box-shadow:0 4px 14px rgba(124,58,237,.28);display:inline-block}
+.metas{display:flex;gap:12px;justify-content:center;margin-bottom:24px;flex-wrap:wrap}
+.meta{display:flex;align-items:center;gap:6px;color:var(--mu);font-size:.85rem}
+.dot{width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0}
+.quiz{max-width:520px;margin:20px auto;padding:0 16px;display:none}
+.prog-bar-wrap{margin-bottom:18px}
+.prog-lbl{display:flex;justify-content:space-between;color:var(--mu);font-size:.8rem;margin-bottom:6px;font-weight:600}
+.prog-bar{height:8px;background:var(--bo);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--pr),#a78bfa);border-radius:99px;transition:width .4s}
+.qcard{background:var(--white);border:2px solid var(--pl);border-radius:20px;padding:20px;box-shadow:0 2px 12px rgba(124,58,237,.07)}
+.qchip{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;background:var(--pl);color:var(--pr);margin-bottom:10px}
+.qtxt{font-size:1.05rem;font-weight:700;line-height:1.5;margin-bottom:6px}
+.qhint{font-size:.8rem;color:var(--mu);margin-bottom:16px;font-style:italic}
+.opts{display:flex;flex-direction:column;gap:14px}
+.ocard{background:var(--bg);border:2px solid var(--bo);border-radius:14px;padding:14px}
+.otop{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.oico{font-size:1.25rem;flex-shrink:0;line-height:1.3}
+.olbl{font-size:.93rem;line-height:1.45;font-weight:500}
+.srow{display:flex;align-items:center;gap:8px}
+.send{font-size:.76rem;color:var(--mu);font-weight:600;min-width:14px}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:10px;border-radius:5px;outline:none;cursor:pointer;background:#e5e7eb;touch-action:pan-y}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);background:var(--pr)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;cursor:pointer;border:3px solid #fff;background:var(--pr)}
+.sval{font-size:.82rem;font-weight:800;min-width:20px;text-align:center;color:var(--pr)}
+.socq{padding:16px;background:var(--bg);border:2px solid var(--pl);border-radius:14px}
+.socpoles{display:flex;justify-content:space-between;margin-bottom:10px;gap:8px}
+.pole{font-size:.9rem;font-weight:700;max-width:46%;line-height:1.3}
+.pole.r{text-align:right}
+.navbtns{display:flex;gap:10px;margin-top:16px}
+.btn2{background:var(--white);color:var(--text);border:2px solid var(--bo);padding:13px 16px;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;min-height:50px;flex:1;-webkit-tap-highlight-color:transparent}
+.btn3{background:var(--pr);color:#fff;border:none;padding:13px 16px;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;min-height:50px;flex:2;-webkit-tap-highlight-color:transparent}
+.res{max-width:560px;margin:20px auto;padding:0 16px 60px;display:none}
+.reshdr{text-align:center;margin-bottom:24px}
+.reshdr .re{font-size:2.4rem;display:block;margin-bottom:8px}
+.reshdr h2{font-size:1.5rem;font-weight:900;color:var(--pr);margin-bottom:6px}
+.reshdr p{color:var(--mu);font-size:.9rem}
+.rc{background:var(--white);border:2px solid var(--pl);border-radius:16px;padding:18px;margin-bottom:14px}
+.rct{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:12px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:460px){.rgrid{grid-template-columns:1fr}}
+.cwrap{max-width:260px;margin:0 auto}
+.sbars{display:flex;flex-direction:column;gap:12px}
+.sbrow{display:flex;flex-direction:column;gap:5px}
+.sbhd{display:flex;justify-content:space-between}
+.sbn{font-size:.84rem;font-weight:700}
+.sbp{font-size:.84rem;font-weight:800}
+.sbtr{height:10px;background:var(--bo);border-radius:99px;overflow:hidden}
+.sbfi{height:100%;border-radius:99px}
+.dcard{background:var(--white);border:2px solid var(--pl);border-radius:16px;padding:20px;margin-bottom:14px}
+.dbadge{display:inline-block;padding:4px 12px;border-radius:99px;font-size:.74rem;font-weight:800;margin-bottom:10px}
+.dcard h3{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+.dcard p{color:var(--mu);line-height:1.65;font-size:.9rem;margin-bottom:14px}
+.tips{display:flex;flex-wrap:wrap;gap:7px}
+.tip{background:var(--bg);border:2px solid var(--bo);border-radius:8px;padding:6px 11px;font-size:.8rem;font-weight:500}
+.socres{background:var(--white);border:2px solid var(--pl);border-radius:16px;padding:18px;margin-bottom:14px}
+.soclbls{display:flex;justify-content:space-between;font-size:.8rem;color:var(--mu);font-weight:700}
+.soctr{height:12px;background:var(--bo);border-radius:99px;overflow:hidden;margin:10px 0}
+.socfi{height:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa);border-radius:99px}
+.endbtns{display:flex;gap:10px;flex-wrap:wrap}
+.endbtns .btn{flex:1;min-width:130px;max-width:none;box-shadow:none}
+.endbtns .btn2{flex:1;min-width:110px}
+@media print{.hdr,.langs,.endbtns,.hero,.quiz{display:none!important}.res{display:block!important;margin:0;padding:20px}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="brand">
+    <span class="bname">Ella Languages</span>
+    <span class="bsub">Creative Department</span>
+  </div>
+  <div class="langs">
+    <button class="lb on" onclick="setLang('ro')">RO</button>
+    <button class="lb" onclick="setLang('en')">EN</button>
+    <button class="lb" onclick="setLang('de')">DE</button>
+    <button class="lb" onclick="setLang('es')">ES</button>
+    <button class="lb" onclick="setLang('fr')">FR</button>
+  </div>
+</div>
+<div class="hero" id="hero-section">
+  <span class="hero-ico">&#129504;&#10024;</span>
+  <h1 id="hero-title">Cum înveți tu cel mai bine?</h1>
+  <p id="hero-desc">Răspunde la câteva întrebări și afli cum îți place să înveți lucruri noi. Nu există răspunsuri greșite!</p>
+  <div class="metas">
+    <div class="meta"><span class="dot"></span><span id="meta-q">20 întrebări</span></div>
+    <div class="meta"><span class="dot"></span><span id="meta-t">7-10 minute</span></div>
+    <div class="meta"><span class="dot"></span><span id="meta-f">Gratuit</span></div>
+  </div>
+  <button class="btn" onclick="startQuiz()" id="start-btn">Să începem! &#128640;</button>
+</div>
+<div class="quiz" id="quiz-section">
+  <div class="prog-bar-wrap">
+    <div class="prog-lbl"><span id="q-counter">1 / 20</span><span id="q-pct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="qcard">
+    <div class="qchip" id="q-chip">VARK</div>
+    <div class="qtxt" id="q-text"></div>
+    <div class="qhint" id="q-hint"></div>
+    <div id="opts-con"></div>
+  </div>
+  <div class="navbtns">
+    <button class="btn2" id="btn-back" onclick="prevQ()">&#8592;</button>
+    <button class="btn3" id="btn-fwd" onclick="nextQ()">Inainte &#8594;</button>
+  </div>
+</div>
+<div class="res" id="res-section">
+  <div class="reshdr">
+    <span class="re">&#127881;</span>
+    <h2 id="res-title">Așa înveți tu cel mai bine!</h2>
+    <p id="res-sub"></p>
+  </div>
+  <div id="dom-area"></div>
+  <div id="soc-area"></div>
+  <div class="rgrid">
+    <div class="rc"><div class="rct" id="chart-lbl">Stilul tau</div><div class="cwrap"><canvas id="radarChart"></canvas></div></div>
+    <div class="rc"><div class="rct" id="scores-lbl">Punctajele tale</div><div class="sbars" id="sbars"></div></div>
+  </div>
+  <div class="endbtns">
+    <button class="btn" onclick="window.print()" id="btn-print">Salveaza</button>
+    <button class="btn2" onclick="doRestart()" id="btn-restart">Din nou</button>
+  </div>
+</div>
+<script>
+var lang='ro', answers={}, cQ=0, chartObj=null;
+var C={V:'#6366f1',A:'#f59e0b',R:'#10b981',K:'#ef4444'};
+var T={
+ro:{title:'Cum înveți tu cel mai bine?',desc:'Răspunde la câteva întrebări și afli cum îți place să înveți lucruri noi. Nu există răspunsuri greșite!',mq:'20 întrebări',mt:'7-10 minute',mf:'Gratuit',start:'Să începem!',qlbl:'Întrebarea',qof:'din',back:'Înapoi',fwd:'Înainte',finish:'Rezultatele mele!',hint:'Trage bara: 0 = nu seamănă cu mine, 5 = da, exact așa sunt eu!',hints:'Trage spre ce ți se potrivește mai bine',chip:'VARK',chips:'Eu și ceilalți',rtitle:'Așa înveți tu cel mai bine!',rsub:'Felicitări! Uite cum funcționează mintea ta.',chlbl:'Stilul tău',sclbl:'Punctajele tale',d1:'Stilul tău principal',d2:'Al doilea stil',tlbl:'Cum poți învăța mai bine',soclbl:'Înveți singur sau cu alții?',socl:'Singur',socr:'Cu prieteni',print:'Salvează / Printează',restart:'Din nou',dimN:{V:'Visual',A:'Auditiv',R:'Citit/Scris',K:'Practic'},dimD:{V:'Înveți cel mai bine când VEZI lucrurile! Îți plac desenele, culorile, schemele și videoclipurile. Mintea ta face imagini ca un aparat foto.',A:'Înveți cel mai bine când ASCULȚI sau vorbești! Îți plac explicațiile și discuțiile. Urechile tale sunt superputerea ta la învățat.',R:'Înveți cel mai bine când CITEȘTI sau SCRII! Îți plac cărțile și notițele. Când scrii ceva, îlții minte mult mai bine.',K:'Înveți cel mai bine când FACI ceva cu mâinile! Ai nevoie să încerci și să experimentezi. Înveți mai repede făcând decât citind.'},dimT:{V:['Desenează ce înveți','Fă scheme colorate','Folosește stickere','Uită-te la videoclipuri','Fă hărți mentale','Colorează notițele'],A:['Explică lecția cu voce tare','Cântă ce trebuie să memorezi','Ascultă audiobook-uri','Povestește părinților ce ai învățat','Înregistrează-te și ascultă','Discută cu colegi'],R:['Scrie rezumate','Fă fișe cu întrebări','Copiază notițele ordonat','Fă liste cu ce ai învățat','Citește de mai multe ori','Ține un jurnal'],K:['Fă experimente','Construiește modele','Joacă-te cu ce înveți','Mișcă-te în timp ce înveți','Fă proiecte practice','Rezolvă multe exerciții']},socD:{independent:'Înveți mai bine singur, în liniște. Îți place să gândești fără să fii deranjat. Concentrarea profundă este puterea ta!',collaborative:'Înveți mai bine împreună cu alții! Prietenii și colegii te ajută să înțelegi mai repede. Lucrul în echipă este puterea ta!',balanced:'Poți învăța și singur și cu alții! Ești flexibil.'}},
+en:{title:'How do YOU learn best?',desc:"Answer a few questions and find out how you like to learn new things. There are no wrong answers!",mq:'20 questions',mt:'7-10 minutes',mf:'Free',start:"Let's go!",qlbl:'Question',qof:'of',back:'Back',fwd:'Next',finish:'My results!',hint:'Drag each bar: 0 = not me, 5 = yes, totally me!',hints:'Drag toward what fits you best',chip:'VARK',chips:'Me & others',rtitle:'This is how you learn best!',rsub:"Congrats! Here's how your brain works when you learn new things.",chlbl:'Your style',sclbl:'Your scores',d1:'Your main style',d2:'Your second style',tlbl:'How you can learn better',soclbl:'Do you learn alone or with others?',socl:'Alone',socr:'With friends',print:'Save / Print',restart:'Try again',dimN:{V:'Visual',A:'Auditory',R:'Reading/Writing',K:'Hands-on'},dimD:{V:'You learn best when you SEE things! You love drawings, colors, diagrams and videos. Your brain takes pictures like a camera.',A:"You learn best when you LISTEN or talk! You love explanations and discussions. Your ears are your superpower for learning!",R:"You learn best when you READ or WRITE! You love books, notes and lists. When you write something down, you remember it much better.",K:"You learn best when you DO something with your hands! You need to try and experiment. You learn faster by doing than by reading."},dimT:{V:['Draw what you learn','Make colorful diagrams','Use sticky notes','Watch videos','Make mind maps','Color-code notes'],A:['Explain the lesson out loud','Sing what to memorize','Listen to audiobooks','Tell parents what you learned','Record yourself and listen back','Discuss with classmates'],R:['Write summaries','Make question cards','Copy notes neatly','Make lists of what you learned','Read multiple times','Keep a learning diary'],K:['Do experiments','Build models','Play with what you learn','Move while studying','Do practical projects','Solve many exercises']},socD:{independent:'You learn better alone, in quiet. Deep focus is your superpower!',collaborative:'You learn better with others! Friends and classmates help you understand faster. Teamwork is your superpower!',balanced:'You can learn both alone and with others! You are flexible.'}},
+de:{title:'Wie lernst DU am besten?',desc:'Beantworte ein paar Fragen und finde heraus, wie du am liebsten neue Dinge lernst. Es gibt keine falschen Antworten!',mq:'20 Fragen',mt:'7-10 Minuten',mf:'Kostenlos',start:'Los geht es!',qlbl:'Frage',qof:'von',back:'Zurück',fwd:'Weiter',finish:'Meine Ergebnisse!',hint:'Schieber ziehen: 0 = nicht ich, 5 = genau das bin ich!',hints:'Schieber in Richtung dessen ziehen was passt',chip:'VARK',chips:'Ich und andere',rtitle:'So lernst du am besten!',rsub:'Super! So funktioniert dein Gehirn wenn du neue Dinge lernst.',chlbl:'Dein Stil',sclbl:'Deine Punkte',d1:'Dein Hauptstil',d2:'Dein zweiter Stil',tlbl:'So kannst du besser lernen',soclbl:'Lernst du allein oder mit anderen?',socl:'Allein',socr:'Mit Freunden',print:'Speichern / Drucken',restart:'Nochmal',dimN:{V:'Visuell',A:'Auditiv',R:'Lesen/Schreiben',K:'Praktisch'},dimD:{V:'Du lernst am besten wenn du Dinge SIEHST! Du liebst Zeichnungen, Farben und Videos. Dein Gehirn macht Fotos wie eine Kamera.',A:'Du lernst am besten wenn du ZUHÖRST oder redest! Du liebst Erklärungen und Diskussionen. Deine Ohren sind deine Superkraft.',R:'Du lernst am besten wenn du LIEST oder SCHREIBST! Du liebst Bücher und Notizen. Wenn du etwas aufschreibst, merkst du es viel besser.',K:'Du lernst am besten wenn du etwas mit den Händen MACHST! Du musst ausprobieren und experimentieren. Du lernst schneller durch Tun.'},dimT:{V:['Zeichne was du lernst','Bunte Diagramme machen','Haftnotizen nutzen','Videos schauen','Mindmaps erstellen','Notizen einfärben'],A:['Lektion laut erklären','Auswendiglernstoff singen','Hörbücher hören','Eltern berichten was du lerntest','Dich aufnehmen und abhören','Mit Mitschülern diskutieren'],R:['Zusammenfassungen schreiben','Fragekarten machen','Notizen ordentlich abschreiben','Listen des Gelernten machen','Mehrmals lesen','Lerntagebuch führen'],K:['Experimente machen','Modelle bauen','Mit dem Gelernten spielen','Beim Lernen bewegen','Praktische Projekte machen','Viele Aufgaben lösen']},socD:{independent:'Du lernst besser allein, in Ruhe. Tiefe Konzentration ist deine Stärke!',collaborative:'Du lernst besser mit anderen! Freunde helfen dir schneller zu verstehen. Teamarbeit ist deine Stärke!',balanced:'Du kannst sowohl allein als auch mit anderen lernen! Du bist flexibel.'}},
+es:{title:'¿Cómo aprendes TÚ mejor?',desc:'Responde unas preguntas y descubre cómo te gusta aprender cosas nuevas. ¡No hay respuestas incorrectas!',mq:'20 preguntas',mt:'7-10 minutos',mf:'Gratis',start:'¡Vamos!',qlbl:'Pregunta',qof:'de',back:'Atrás',fwd:'Siguiente',finish:'Mis resultados!',hint:'Mueve cada barra: 0 = no soy así, 5 = ¡exactamente así soy!',hints:'Mueve hacia lo que mejor te describe',chip:'VARK',chips:'Yo y los demás',rtitle:'¡Así es como aprendes mejor!',rsub:'¡Felicidades! Aquí está cómo funciona tu cerebro cuando aprendes.',chlbl:'Tu estilo',sclbl:'Tus puntuaciones',d1:'Tu estilo principal',d2:'Tu segundo estilo',tlbl:'Cómo puedes aprender mejor',soclbl:'¿Aprendes solo o con otros?',socl:'Solo',socr:'Con amigos',print:'Guardar / Imprimir',restart:'Otra vez',dimN:{V:'Visual',A:'Auditivo',R:'Lectura/Escritura',K:'Practico'},dimD:{V:'¡Aprendes mejor cuando VES las cosas! Te gustan los dibujos, los colores y los videos. Tu cerebro saca fotos como una cámara.',A:'¡Aprendes mejor cuando ESCUCHAS o hablas! Te gustan las explicaciones y discusiones. ¡Tus oídos son tu superpoder!',R:'¡Aprendes mejor cuando LEES o ESCRIBES! Te gustan los libros y los apuntes. Cuando escribes algo, lo recuerdas mucho mejor.',K:'¡Aprendes mejor cuando HACES algo con las manos! Necesitas probar y experimentar. Aprendes más rápido haciendo.'},dimT:{V:['Dibuja lo que aprendes','Haz diagramas de colores','Usa notas adhesivas','Mira videos','Haz mapas mentales','Colorea tus apuntes'],A:['Explica la lección en voz alta','Canta lo que debes memorizar','Escucha audiolibros','Cuéntale a tus padres lo que aprendiste','Grábate y escúchate','Discute con compañeros'],R:['Escribe resúmenes','Haz tarjetas de preguntas','Copia los apuntes con cuidado','Haz listas de lo aprendido','Lee varias veces','Lleva un diario'],K:['Haz experimentos','Construye modelos','Juega con lo que aprendes','Muévete mientras estudias','Haz proyectos prácticos','Resuelve muchos ejercicios']},socD:{independent:'¡Aprendes mejor solo, en silencio. La concentración es tu superpoder!',collaborative:'¡Aprendes mejor con otros! Los amigos te ayudan a entender más rápido. ¡El trabajo en equipo es tu superpoder!',balanced:'¡Puedes aprender tanto solo como con otros! Eres flexible.'}},
+fr:{title:'Comment TU apprends le mieux ?',desc:"Réponds à quelques questions et découvre comment tu aimes apprendre. Il n'y a pas de mauvaises réponses !",mq:'20 questions',mt:'7-10 minutes',mf:'Gratuit',start:"C'est parti !",qlbl:'Question',qof:'sur',back:'Retour',fwd:'Suivant',finish:'Mes résultats !',hint:"Fais glisser chaque barre : 0 = pas moi, 5 = oui c'est moi !",hints:'Fais glisser vers ce qui te correspond',chip:'VARK',chips:'Moi et les autres',rtitle:"C'est comme ça que tu apprends le mieux !",rsub:"Bravo ! Voici comment ton cerveau fonctionne quand tu apprends.",chlbl:'Ton style',sclbl:'Tes scores',d1:'Ton style principal',d2:'Ton deuxième style',tlbl:'Comment tu peux mieux apprendre',soclbl:'Tu apprends seul ou avec les autres ?',socl:'Seul',socr:'Avec des amis',print:'Sauvegarder / Imprimer',restart:'Recommencer',dimN:{V:'Visuel',A:'Auditif',R:'Lecture/Écriture',K:'Pratique'},dimD:{V:"Tu apprends le mieux quand tu VOIS les choses ! Tu aimes les dessins, les couleurs et les vidéos. Ton cerveau prend des photos comme un appareil photo.",A:"Tu apprends le mieux quand tu ÉCOUTES ou tu parles ! Tu aimes les explications et les discussions. Tes oreilles sont ton super-pouvoir !",R:"Tu apprends le mieux quand tu LIS ou tu ÉCRIS ! Tu aimes les livres et les notes. Quand tu écris quelque chose, tu t'en souviens beaucoup mieux.",K:"Tu apprends le mieux quand tu FAIS quelque chose avec tes mains ! Tu as besoin d'essayer et d'expérimenter. Tu apprends plus vite en faisant."},dimT:{V:['Dessine ce que tu apprends','Fais des schémas en couleur','Utilise des post-its','Regarde des vidéos','Fais des cartes mentales','Colorie tes notes'],A:['Explique la leçon à voix haute','Chante ce que tu dois mémoriser','Écoute des livres audio','Raconte à tes parents ce que tu as appris','Enregistre-toi et réécoute','Discute avec des camarades'],R:['Écris des résumés','Fais des fiches de questions','Recopie tes notes proprement','Fais des listes de ce que tu as appris','Relis plusieurs fois','Tiens un journal'],K:["Fais des expériences","Construis des maquettes","Joue avec ce que tu apprends","Bouge pendant que tu étudies","Fais des projets pratiques","Résous le plus d'exercices possible"]},socD:{independent:"Tu apprends mieux seul, dans le calme. La concentration est ton super-pouvoir !",collaborative:"Tu apprends mieux avec les autres ! Les amis t'aident à comprendre plus vite. Le travail en équipe est ton super-pouvoir !",balanced:"Tu peux apprendre seul et avec les autres ! Tu es flexible."}}
+};
+var Q=[
+{t:'v',text:{ro:'Când înveți un joc nou (pe calculator, sport, joc de societate), ce faci mai întâi?',en:'When you learn a new game (video game, sport, board game), what do you do first?',de:'Wenn du ein neues Spiel lernst, was machst du zuerst?',es:'Cuando aprendes un juego nuevo, ¿qué haces primero?',fr:"Quand tu apprends un nouveau jeu, qu'est-ce que tu fais en premier ?"},opts:[
+{s:'V',e:'👀',t:{ro:'Mă uit cum joacă alții înainte să încep eu',en:'I watch how others play before I start',de:'Ich schaue zu wie andere spielen bevor ich anfange',es:'Veo cómo juegan otros antes de empezar',fr:'Je regarde comment les autres jouent avant de commencer'}},
+{s:'A',e:'👂',t:{ro:'Cer cuiva să îmi explice regulile cu voce tare',en:'I ask someone to explain the rules out loud',de:'Ich bitte jemanden mir die Regeln laut zu erklären',es:'Le pido a alguien que me explique las reglas',fr:"Je demande à quelqu'un de m'expliquer les règles"}},
+{s:'R',e:'📖',t:{ro:'Citesc instrucțiunile sau regulile scrise',en:'I read the written instructions or rules',de:'Ich lese die schriftlichen Anweisungen',es:'Leo las instrucciones escritas',fr:'Je lis les instructions écrites'}},
+{s:'K',e:'✋',t:{ro:'Încep direct să joc și învăț pe parcurs',en:'I just start playing and learn as I go',de:'Ich fange einfach an und lerne dabei',es:'Empiezo a jugar y aprendo sobre la marcha',fr:"Je commence directement et j'apprends en jouant"}}
+]},
+{t:'v',text:{ro:'Când nu înțelegi ceva la școală, ce faci?',en:"When you don't understand something at school, what do you do?",de:'Wenn du etwas in der Schule nicht verstehst was machst du?',es:'¿Cuando no entiendes algo en la escuela, qué haces?',fr:"Quand tu ne comprends pas quelque chose à l'école, qu'est-ce que tu fais ?"},opts:[
+{s:'V',e:'👀',t:{ro:'Caut un desen, o poză sau un video care să explice',en:'I look for a picture or video that explains it',de:'Ich suche ein Bild oder Video das es erklärt',es:'Busco un dibujo o video que lo explique',fr:'Je cherche un dessin ou vidéo qui explique'}},
+{s:'A',e:'👂',t:{ro:'Cer profesorului sau unui coleg să îmi explice',en:'I ask the teacher or a classmate to explain',de:'Ich bitte den Lehrer oder Mitschüler es zu erklären',es:'Le pido al profesor o compañero que explique',fr:"Je demande au professeur ou camarade d'expliquer"}},
+{s:'R',e:'📖',t:{ro:'Recitesc lecția sau notițele din caiet',en:'I re-read the lesson or my notes',de:'Ich lese Lektion oder Notizen nochmal',es:'Releo la lección o mis apuntes',fr:'Je relis la leçon ou mes notes'}},
+{s:'K',e:'✋',t:{ro:'Încerc să fac exercițiul și văd ce iese',en:'I try to do the exercise and see what happens',de:'Ich versuche die Aufgabe zu machen und schaue was rauskommt',es:'Intento hacer el ejercicio y veo qué pasa',fr:"J'essaie de faire l'exercice et vois ce qui se passe"}}
+]},
+{t:'v',text:{ro:'Ce fel de temă pentru acasă îți place cel mai mult?',en:'What kind of homework do you like most?',de:'Welche Art von Hausaufgaben magst du am liebsten?',es:'¿Qué tipo de tarea te gusta más?',fr:'Quel genre de devoirs aimes-tu le plus ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Proiecte cu desene, scheme sau prezentări vizuale',en:'Projects with drawings, diagrams or visual presentations',de:'Projekte mit Zeichnungen oder Diagrammen',es:'Proyectos con dibujos o esquemas visuales',fr:'Projets avec des dessins ou schemas visuels'}},
+{s:'A',e:'👂',t:{ro:'Prezentări orale în fața clasei',en:'Oral presentations in front of the class',de:'Mündliche Vorträge vor der Klasse',es:'Presentaciones orales frente a la clase',fr:'Exposés oraux devant la classe'}},
+{s:'R',e:'📖',t:{ro:'Scriere, rezumate sau fișe de completat',en:'Writing, summaries or fill-in worksheets',de:'Schreiben, Zusammenfassungen oder Arbeitsblätter',es:'Escritura, resúmenes o fichas',fr:'Rédaction, résumés ou fiches à compléter'}},
+{s:'K',e:'✋',t:{ro:'Experimente, proiecte practice sau modele de construit',en:'Experiments, practical projects or models to build',de:'Experimente, Projekte oder Modelle zum Bauen',es:'Experimentos, proyectos prácticos o maquetas',fr:'Expériences, projets pratiques ou maquettes'}}
+]},
+{t:'v',text:{ro:'Cum îți amintești cel mai bine ce ai învățat?',en:'How do you best remember what you learned?',de:'Wie erinnerst du dich am besten an das Gelernte?',es:'¿Cómo recuerdas mejor lo que aprendiste?',fr:'Comment tu te souviens le mieux de ce que tu as appris ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Văd în minte un desen sau o schemă colorată',en:'I see a drawing or colorful diagram in my head',de:'Ich sehe eine Zeichnung oder buntes Diagramm im Kopf',es:'Veo un dibujo o esquema colorido en mi mente',fr:'Je vois un dessin ou schéma coloré dans ma tête'}},
+{s:'A',e:'👂',t:{ro:'Aud vocea profesorului sau un cântec/ritm',en:"I hear the teacher's voice or a song/rhythm",de:'Ich höre die Stimme des Lehrers oder ein Lied',es:'Escucho la voz del profesor o una canción',fr:"J'entends la voix du professeur ou une chanson"}},
+{s:'R',e:'📖',t:{ro:'Văd cuvintele scrise sau o listă în caiet',en:'I see written words or a list in my notebook',de:'Ich sehe geschriebene Wörter in meinem Heft',es:'Veo palabras escritas en mi cuaderno',fr:'Je vois des mots écrits dans mon cahier'}},
+{s:'K',e:'✋',t:{ro:'Îmi amintesc că am făcut ceva cu mâinile',en:'I remember doing something with my hands',de:'Ich erinnere mich etwas mit Handen gemacht zu haben',es:'Recuerdo haber hecho algo con las manos',fr:"Je me souviens d'avoir fait quelque chose avec mes mains"}}
+]},
+{t:'v',text:{ro:'Cum înveți cel mai bine pentru un test?',en:'How do you study best for a test?',de:'Wie lernst du am besten fur einen Test?',es:'¿Cómo estudias mejor para un examen?',fr:'Comment tu étudies le mieux pour un contrôle ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Fac desene, scheme colorate sau hărți mentale',en:'I make drawings, colorful diagrams or mind maps',de:'Ich mache Zeichnungen, bunte Diagramme oder Mindmaps',es:'Hago dibujos, esquemas de colores o mapas mentales',fr:'Je fais des dessins, schémas en couleur ou cartes mentales'}},
+{s:'A',e:'👂',t:{ro:'Repet cu voce tare sau îmi explic singur',en:'I repeat out loud or explain to myself',de:'Ich wiederhole laut oder erkläre es mir selbst',es:'Repito en voz alta o me lo explico',fr:"Je répète à voix haute ou je me l'explique"}},
+{s:'R',e:'📖',t:{ro:'Rescriu notițele sau fac fișe cu întrebări',en:'I rewrite my notes or make question cards',de:'Ich schreibe Notizen um oder mache Fragekarten',es:'Reescribo apuntes o hago tarjetas de preguntas',fr:'Je recopie mes notes ou fais des fiches'}},
+{s:'K',e:'✋',t:{ro:'Rezolv cât mai multe exerciții practice',en:'I solve as many practice exercises as possible',de:'Ich löse so viele Übungsaufgaben wie möglich',es:'Resuelvo tantos ejercicios prácticos como puedo',fr:"Je résous autant d'exercices que possible"}}
+]},
+{t:'v',text:{ro:'Cum explici unui coleg ceva ce tu știi deja?',en:"How do you explain something to a classmate who doesn't know it?",de:'Wie erklärst du einem Mitschüler etwas das du weißt?',es:'¿Cómo le explicas algo a un compañero que no lo sabe?',fr:'Comment tu expliques quelque chose à un camarade qui ne le sait pas ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Desenez sau arăt cu degetul pe o imagine',en:'I draw it or point to a picture',de:'Ich zeichne es oder zeige auf ein Bild',es:'Lo dibujo o señalo una imagen',fr:'Je le dessine ou montre une image'}},
+{s:'A',e:'👂',t:{ro:'Explic cu voce tare și dau exemple din viața reală',en:'I explain out loud with real-life examples',de:'Ich erkläre laut mit Beispielen aus dem Leben',es:'Explico en voz alta con ejemplos de la vida',fr:"J'explique à voix haute avec des exemples de la vie"}},
+{s:'R',e:'📖',t:{ro:'Îi scriu pașii sau îi dau o fișă',en:'I write down the steps or give a worksheet',de:'Ich schreibe Schritte auf oder gebe ein Arbeitsblatt',es:'Le escribo los pasos o le doy una ficha',fr:"J'écris les étapes ou donne une fiche"}},
+{s:'K',e:'✋',t:{ro:'Facem împreună, pas cu pas',en:'We do it together step by step',de:'Wir machen es zusammen Schritt für Schritt',es:'Lo hacemos juntos paso a paso',fr:'On le fait ensemble étape par étape'}}
+]},
+{t:'v',text:{ro:'Cum știi că ai învățat cu adevărat ceva?',en:'How do you know you truly learned something?',de:'Woran merkst du dass du etwas wirklich gelernt hast?',es:'¿Cómo sabes que realmente aprendiste algo?',fr:'Comment tu sais que tu as vraiment appris quelque chose ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Pot să redesenez schema fără să mă uit în caiet',en:'I can redraw the diagram without my notebook',de:'Ich kann das Diagramm ohne Heft neu zeichnen',es:'Puedo redibujar el esquema sin mi cuaderno',fr:'Je peux redessiner le schema sans mon cahier'}},
+{s:'A',e:'👂',t:{ro:'Pot să explic altcuiva fără să mă încurc',en:'I can explain it to someone without getting confused',de:'Ich kann es jemand anderem erklären ohne Fehler',es:'Puedo explicárselo a alguien sin confundirme',fr:"Je peux l'expliquer à quelqu'un sans me tromper"}},
+{s:'R',e:'📖',t:{ro:'Pot să scriu tot ce știu fără să mă uit în caiet',en:'I can write everything I know without my notebook',de:'Ich kann alles aufschreiben ohne ins Heft zu schauen',es:'Puedo escribir todo sin mirar mi cuaderno',fr:'Je peux tout écrire sans regarder mon cahier'}},
+{s:'K',e:'✋',t:{ro:'Pot să fac exercițiul singur fără ajutor',en:'I can do the exercise alone without help',de:'Ich kann die Aufgabe alleine ohne Hilfe machen',es:'Puedo hacer el ejercicio solo sin ayuda',fr:'Je peux faire exercice seul sans aide'}}
+]},
+{t:'v',text:{ro:'Ce activitate la școală îți place cel mai mult?',en:'What school activity do you enjoy most?',de:'Welche Schulaktivität magst du am meisten?',es:'¿Qué actividad escolar te gusta más?',fr:'Quelle activité scolaire aimes-tu le plus ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Hărți, desene pe tablă sau prezentări cu imagini',en:'Maps, board drawings or presentations with pictures',de:'Karten, Zeichnungen an der Tafel oder Bilder-Prasentationen',es:'Mapas, dibujos en la pizarra o presentaciones con imágenes',fr:'Cartes, dessins au tableau ou presentations avec images'}},
+{s:'A',e:'👂',t:{ro:'Discuții în clasă, dezbateri sau teatru',en:'Class discussions, debates or theater',de:'Klassendiskussionen, Debatten oder Theater',es:'Debates en clase, discusiones o teatro',fr:'Discussions en classe, débats ou théâtre'}},
+{s:'R',e:'📖',t:{ro:'Lectură, compuneri sau completare de fișe',en:'Reading, essays or filling in worksheets',de:'Lesen, Aufsätze oder Arbeitsblätter ausfüllen',es:'Lectura, redacciones o completar fichas',fr:'Lecture, rédactions ou remplissage de fiches'}},
+{s:'K',e:'✋',t:{ro:'Experimente, ateliere sau activități de construit ceva',en:'Experiments, workshops or build-something activities',de:'Experimente, Workshops oder Bau-Aktivitäten',es:'Experimentos, talleres o actividades de construcción',fr:'Expériences, ateliers ou activités de construction'}}
+]},
+{t:'v',text:{ro:'Când înveți o mișcare nouă (dans, sport, înot), ce te ajută mai mult?',en:'When you learn a new movement (dance, sport, swimming), what helps most?',de:'Wenn du eine neue Bewegung lernst, was hilft dir am meisten?',es:'¿Cuando aprendes un movimiento nuevo, qué te ayuda más?',fr:"Quand tu apprends un nouveau mouvement, qu'est-ce qui t'aide le plus ?"},opts:[
+{s:'V',e:'👀',t:{ro:'Să mă uit cum face altcineva, pas cu pas',en:'Watching someone else do it step by step',de:'Jemand anderem zuschauen Schritt für Schritt',es:'Ver a alguien más hacerlo paso a paso',fr:"Regarder quelqu'un d'autre le faire"}},
+{s:'A',e:'👂',t:{ro:'Cineva să îmi spună verbal ce să fac',en:'Someone telling me verbally what to do',de:'Jemand sagt mir mündlich was ich tun soll',es:'Alguien diciéndome verbalmente qué hacer',fr:'Quelqu\'un me disant verbalement quoi faire'}},
+{s:'R',e:'📖',t:{ro:'Să am scris ce trebuie să fac pas cu pas',en:'Having written step-by-step instructions',de:'Schriftliche Anweisungen zu haben Schritt für Schritt',es:'Tener instrucciones escritas paso a paso',fr:'Avoir des instructions écrites étape par étape'}},
+{s:'K',e:'✋',t:{ro:'Să încerc direct și să mă corectez pe parcurs',en:'Trying it directly and correcting myself as I go',de:'Es direkt versuchen und mich dabei korrigieren',es:'Intentarlo directamente y corregirme',fr:"L'essayer directement et me corriger au fur et à mesure"}}
+]},
+{t:'v',text:{ro:'Cum îți organizezi lucrurile de școală?',en:'How do you organize your school things?',de:'Wie organisierst du deine Schulsachen?',es:'¿Cómo organizas tus cosas de la escuela?',fr:'Comment tu organises tes affaires scolaires ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Cu culori, stickere și desene pe caiete și mape',en:'With colors, stickers and drawings on notebooks',de:'Mit Farben, Aufklebern und Zeichnungen auf Heften',es:'Con colores, pegatinas y dibujos en cuadernos',fr:'Avec des couleurs, autocollants et dessins'}},
+{s:'A',e:'👂',t:{ro:'Îmi spun singur sau cer cuiva să îmi reamintească',en:'I tell myself or ask someone to remind me',de:'Ich sage es mir selbst oder bitte jemanden mich zu erinnern',es:'Me lo digo o pido a alguien que me recuerde',fr:"Je me le dis ou demande à quelqu'un de me rappeler"}},
+{s:'R',e:'📖',t:{ro:'Fac liste sau scriu în agendă ce am de făcut',en:'I make lists or write in my planner what to do',de:'Ich mache Listen oder schreibe in meinen Planer',es:'Hago listas o escribo en mi agenda',fr:"Je fais des listes ou écris dans mon agenda"}},
+{s:'K',e:'✋',t:{ro:'Pun lucrurile fizic în ordine: ghiozdan, mapă, etui',en:'I physically put things in order: backpack, folder, pencil case',de:'Ich ordne die Dinge physisch: Rucksack, Mappe',es:'Pongo las cosas físicamente en orden: mochila, carpeta',fr:'Je mets les choses en ordre physiquement : sac, classeur'}}
+]},
+{t:'v',text:{ro:'Cum te pregătești pentru un test important de mâine?',en:'How do you prepare for an important test tomorrow?',de:'Wie bereitest du dich auf einen Test morgen vor?',es:'¿Cómo te preparas para un examen importante de mañana?',fr:'Comment tu te prépares pour un contrôle important demain ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Recitesc notițele și mă uit la desene și scheme',en:'I re-read my notes and look at drawings and diagrams',de:'Ich lese Notizen nochmal und schaue Zeichnungen an',es:'Releo mis apuntes y miro los dibujos',fr:'Je relis mes notes et regarde les dessins'}},
+{s:'A',e:'👂',t:{ro:'Îmi explic singur cu voce tare sau cer cuiva să mă asculte',en:'I explain to myself out loud or ask someone to listen',de:'Ich erkläre es mir laut oder bitte jemanden zuzuhören',es:'Me lo explico en voz alta o pido a alguien que escuche',fr:"Je me l'explique à voix haute ou demande à quelqu'un d'écouter"}},
+{s:'R',e:'📖',t:{ro:'Rescriu notițele importante sau fac un rezumat',en:'I rewrite important notes or make a summary',de:'Ich schreibe wichtige Notizen um oder mache Zusammenfassung',es:'Reescribo los apuntes importantes o hago un resumen',fr:'Je recopie les notes importantes ou fais un résumé'}},
+{s:'K',e:'✋',t:{ro:'Rezolv cât mai multe exerciții din manual sau culegere',en:'I solve as many exercises as possible from my textbook',de:'Ich löse so viele Aufgaben wie möglich aus dem Lehrbuch',es:'Resuelvo tantos ejercicios como sea posible del libro',fr:"Je résous autant d'exercices que possible dans mon manuel"}}
+]},
+{t:'v',text:{ro:'Când te simți cel mai mândru la școală?',en:'When do you feel most proud at school?',de:'Wann bist du in der Schule am stolzesten?',es:'¿Cuándo te sientes más orgulloso en la escuela?',fr:"Quand tu te sens le plus fier à l'école ?"},opts:[
+{s:'V',e:'👀',t:{ro:'Când proiectul meu arată bine și organizat vizual',en:'When my project looks nice and visually organized',de:'Wenn mein Projekt gut aussieht und visuell organisiert ist',es:'Cuando mi proyecto se ve bien y organizado',fr:'Quand mon projet est beau et bien organisé'}},
+{s:'A',e:'👂',t:{ro:'Când pot să explic bine ceva în fața clasei',en:'When I can explain something well in front of the class',de:'Wenn ich etwas gut vor der Klasse erklären kann',es:'Cuando puedo explicar algo bien frente a la clase',fr:'Quand je peux bien expliquer quelque chose devant la classe'}},
+{s:'R',e:'📖',t:{ro:'Când am scris o compunere bună sau am luat notă mare',en:'When I wrote a good essay or got a high grade',de:'Wenn ich einen guten Aufsatz schrieb oder eine gute Note hatte',es:'Cuando escribí una buena redacción o saqué nota alta',fr:"Quand j'ai écrit une bonne rédaction ou eu une bonne note"}},
+{s:'K',e:'✋',t:{ro:'Când reușesc să fac un experiment sau un proiect practic',en:'When I manage to do an experiment or practical project',de:'Wenn ich ein Experiment oder Projekt schaffe',es:'Cuando logro hacer un experimento o proyecto práctico',fr:'Quand je réussis à faire une expérience ou projet pratique'}}
+]},
+{t:'v',text:{ro:'Cum înțelegi cel mai bine ceva complicat?',en:'How do you best understand something complicated?',de:'Wie verstehst du am besten etwas Schwieriges?',es:'¿Cómo entiendes mejor algo complicado?',fr:'Comment tu comprends le mieux quelque chose de compliqué ?'},opts:[
+{s:'V',e:'👀',t:{ro:'Printr-un desen, o animație sau o hartă',en:'Through a drawing, animation or map',de:'Durch eine Zeichnung, Animation oder Karte',es:'A través de un dibujo, animación o mapa',fr:'À travers un dessin, animation ou carte'}},
+{s:'A',e:'👂',t:{ro:'Printr-un exemplu explicat de profesor sau dintr-un film',en:'Through an example from a teacher or movie',de:'Durch ein Beispiel vom Lehrer oder aus einem Film',es:'A través de un ejemplo del profesor o película',fr:"À travers un exemple expliqué par le professeur ou d'un film"}},
+{s:'R',e:'📖',t:{ro:'Printr-o definiție clară și exemple scrise',en:'Through a clear definition and written examples',de:'Durch eine klare Definition und schriftliche Beispiele',es:'A través de una definición clara y ejemplos escritos',fr:'À travers une définition claire et des exemples écrits'}},
+{s:'K',e:'✋',t:{ro:'Încercând eu să fac sau să construiesc ceva',en:'By trying to do or build something myself',de:'Indem ich versuche selbst etwas zu machen',es:'Intentando hacer o construir algo yo mismo',fr:'En essayant de faire ou construire quelque chose'}}
+]},
+{t:'v',text:{ro:'Ce te supără cel mai mult în timpul orelor?',en:'What bothers you most during class?',de:'Was stört dich am meisten im Unterricht?',es:'¿Qué te molesta más durante la clase?',fr:"Qu'est-ce qui t'énerve le plus en cours ?"},opts:[
+{s:'V',e:'👀',t:{ro:'Când totul e scris pe tablă fără nicio imagine sau culoare',en:'When everything is on the board with no pictures or colors',de:'Wenn alles an der Tafel steht ohne Bilder oder Farben',es:'Cuando todo está escrito sin imágenes ni colores',fr:'Quand tout est écrit sans images ni couleurs'}},
+{s:'A',e:'👂',t:{ro:'Când trebuie să citesc totul singur fără nicio explicație',en:'When I have to read everything alone with no explanation',de:'Wenn ich alles alleine lesen muss ohne Erklärung',es:'Cuando tengo que leer todo solo sin explicación',fr:'Quand je dois tout lire seul sans explication'}},
+{s:'R',e:'📖',t:{ro:'Când nu avem nimic scris și totul e spus oral',en:'When nothing is written and everything is said verbally',de:'Wenn nichts Schriftliches da ist und alles mündlich ist',es:'Cuando no hay nada escrito y todo se dice oralmente',fr:"Quand il n'y a rien d'écrit et tout est dit à l'oral"}},
+{s:'K',e:'✋',t:{ro:'Când stăm prea mult jos și nu facem nimic cu mâinile',en:"When we sit too long and don't do anything hands-on",de:'Wenn wir zu lange sitzen und nichts mit den Händen machen',es:'Cuando estamos sentados demasiado tiempo sin hacer nada práctico',fr:'Quand on reste assis trop longtemps sans rien faire'}}
+]},
+{t:'v',text:{ro:'Ce îți amintești cel mai bine după o excursie școlară?',en:'What do you remember best after a school trip?',de:'Was erinnerst du dich am besten nach einem Schulausflug?',es:'¿Qué recuerdas mejor después de una excursión escolar?',fr:"Qu'est-ce que tu te souviens le mieux après une sortie scolaire ?"},opts:[
+{s:'V',e:'👀',t:{ro:'Imaginile și lucrurile frumoase văzute',en:'The images and beautiful things I saw',de:'Die Bilder und schönen Dinge die ich gesehen habe',es:'Las imágenes y cosas bonitas que vi',fr:"Les images et belles choses que j'ai vues"}},
+{s:'A',e:'👂',t:{ro:'Poveștile și explicațiile pe care le-am auzit',en:'The stories and explanations I heard',de:'Die Geschichten und Erklärungen die ich gehört habe',es:'Las historias y explicaciones que escuché',fr:"Les histoires et explications que j'ai entendues"}},
+{s:'R',e:'📖',t:{ro:'Ce am scris în carnețel despre locul vizitat',en:'What I wrote in my notebook about the place we visited',de:'Was ich in meinem Notizbuch über den Ort geschrieben habe',es:'Lo que escribí en mi libreta sobre el lugar visitado',fr:"Ce que j'ai écrit dans mon carnet sur l'endroit visité"}},
+{s:'K',e:'✋',t:{ro:'Activitățile la care am participat și am făcut ceva',en:'The activities where I did something hands-on',de:'Die Aktivitäten an denen ich aktiv teilgenommen habe',es:'Las actividades en las que participé y hice algo',fr:"Les activités auxquelles j'ai participé et fait quelque chose"}}
+]},
+{t:'s',text:{ro:'Când ai de învățat ceva nou, preferi:',en:'When you need to learn something new, you prefer:',de:'Wenn du etwas Neues lernen musst, bevorzugst du:',es:'Cuando tienes que aprender algo nuevo, ¿prefieres:',fr:'Quand tu dois apprendre quelque chose de nouveau, tu préfères :'},opts:[
+{s:'S',e:'👫',t:{ro:'Să înveți împreună cu un coleg sau prieten',en:'Learning together with a classmate or friend',de:'Zusammen mit einem Mitschuler oder Freund',es:'Aprender junto con un companero o amigo',fr:'Apprendre avec un camarade ou un ami'}},
+{s:'I',e:'🙂',t:{ro:'Să înveți singur, în liniște',en:'Learning alone, in quiet',de:'Alleine zu lernen in Ruhe',es:'Aprender solo en silencio',fr:'Apprendre seul dans le calme'}}
+]},
+{t:'s',text:{ro:'Când nu știi să rezolvi un exercițiu dificil:',en:"When you can't solve a difficult exercise:",de:'Wenn du eine schwierige Aufgabe nicht lösen kannst:',es:'Cuando no puedes resolver un ejercicio difícil:',fr:"Quand tu n'arrives pas à résoudre un exercice difficile :'"},opts:[
+{s:'S',e:'👫',t:{ro:'Ceri imediat ajutorul unui coleg, părinte sau profesor',en:'You immediately ask a classmate, parent or teacher',de:'Du bittest sofort jemanden um Hilfe',es:'Pides ayuda inmediatamente a alguien',fr:"Tu demandes immédiatement de l'aide à quelqu'un"}},
+{s:'I',e:'🙂',t:{ro:'Încerci mai întâi singur înainte să ceri ajutor',en:'You try by yourself first before asking for help',de:'Du versuchst es erst alleine bevor du fragst',es:'Lo intentas tú solo primero antes de pedir ayuda',fr:"Tu essaies d'abord seul avant de demander"}}
+]},
+{t:'s',text:{ro:'Unde înveți cel mai bine?',en:'Where do you learn best?',de:'Wo lernst du am besten?',es:'¿Dónde aprendes mejor?',fr:'Où apprends-tu le mieux ?'},opts:[
+{s:'S',e:'👫',t:{ro:'Împreună cu colegi sau la meditații în grup',en:'Together with classmates or in group tutoring',de:'Zusammen mit Mitschülern oder im Gruppenunterricht',es:'Con compañeros o en clases en grupo',fr:'Avec des camarades ou en tutorat de groupe'}},
+{s:'I',e:'🙂',t:{ro:'Singur, la birou, fără zgomot în jur',en:'Alone, at my desk, without noise around me',de:'Allein an meinem Schreibtisch ohne Lärm',es:'Solo en mi escritorio sin ruido',fr:'Seul à mon bureau sans bruit autour de moi'}}
+]},
+{t:'s',text:{ro:'Cum preferi să arăți profesorului că știi lecția?',en:'How do you prefer to show the teacher you know the lesson?',de:'Wie zeigst du dem Lehrer dass du die Lektion kennst?',es:'¿Cómo prefieres mostrar al profesor que sabes la lección?',fr:'Comment tu préfères montrer au professeur que tu connais la leçon ?'},opts:[
+{s:'S',e:'👫',t:{ro:'La tablă, în fața clasei, cu colegii prezenți',en:'At the board, in front of the class',de:'An der Tafel vor der Klasse',es:'En la pizarra frente a la clase',fr:'Au tableau devant la classe'}},
+{s:'I',e:'🙂',t:{ro:'Singur, printr-un test scris sau o temă',en:'Alone, through a written test or homework',de:'Alleine durch einen schriftlichen Test',es:'Solo a través de un examen escrito o tarea',fr:'Seul à travers un test écrit ou des devoirs'}}
+]}
+];
+function gl(key){return T[lang]&&T[lang][key]?T[lang][key]:'';}
+function setLang(l){lang=l;document.querySelectorAll('.lb').forEach(function(b){b.classList.toggle('on',b.textContent.trim()===l.toUpperCase());});renderHero();var qs=document.getElementById('quiz-section'),rs=document.getElementById('res-section');if(qs&&qs.style.display!=='none')renderQ();if(rs&&rs.style.display!=='none')showRes();}
+function renderHero(){var d=T[lang];if(!d)return;document.getElementById('hero-title').textContent=d.title;document.getElementById('hero-desc').textContent=d.desc;document.getElementById('meta-q').textContent=d.mq;document.getElementById('meta-t').textContent=d.mt;document.getElementById('meta-f').textContent=d.mf;document.getElementById('start-btn').textContent=d.start;}
+function startQuiz(){document.getElementById('hero-section').style.display='none';document.getElementById('quiz-section').style.display='block';cQ=0;answers={};renderQ();window.scrollTo(0,0);}
+function renderQ(){var q=Q[cQ],tot=Q.length,pct=Math.round(cQ/tot*100),d=T[lang];document.getElementById('q-counter').textContent=d.qlbl+' '+(cQ+1)+' '+d.qof+' '+tot;document.getElementById('q-pct').textContent=pct+'%';document.getElementById('prog-fill').style.width=pct+'%';document.getElementById('q-chip').textContent=q.t==='s'?d.chips:d.chip;document.getElementById('q-text').textContent=q.text[lang];document.getElementById('q-hint').textContent=q.t==='s'?d.hints:d.hint;var con=document.getElementById('opts-con');con.innerHTML='';if(q.t==='v'){var wrap=document.createElement('div');wrap.className='opts';if(!answers[cQ]||typeof answers[cQ]!=='object')answers[cQ]={};q.opts.forEach(function(opt,i){var val=answers[cQ][i]!==undefined?answers[cQ][i]:0,color=C[opt.s]||'#7c3aed',card=document.createElement('div');card.className='ocard';card.innerHTML='<div class="otop"><span class="oico">'+opt.e+'</span><span class="olbl">'+opt.t[lang]+'</span></div><div class="srow"><span class="send">0</span><input type="range" min="0" max="5" step="1" value="'+val+'" data-i="'+i+'" data-c="'+color+'"><span class="send">5</span><span class="sval" id="sv'+cQ+'_'+i+'">'+val+'</span></div>';var inp=card.querySelector('input');setTrack(inp,val,color);inp.addEventListener('input',function(){var v=parseInt(this.value),idx=parseInt(this.getAttribute('data-i')),c=this.getAttribute('data-c');if(!answers[cQ]||typeof answers[cQ]!=='object')answers[cQ]={};answers[cQ][idx]=v;var sv=document.getElementById('sv'+cQ+'_'+idx);if(sv)sv.textContent=v;setTrack(this,v,c);});wrap.appendChild(card);});con.appendChild(wrap);}else{var val2=typeof answers[cQ]==='number'?answers[cQ]:5,div=document.createElement('div');div.className='socq';div.innerHTML='<div class="socpoles"><span class="pole">'+q.opts[1].e+' '+q.opts[1].t[lang]+'</span><span class="pole r">'+q.opts[0].t[lang]+' '+q.opts[0].e+'</span></div><input type="range" min="0" max="10" step="1" value="'+val2+'" style="width:100%">';var sl=div.querySelector('input');setTrack(sl,val2,'#8b5cf6',10);sl.addEventListener('input',function(){var v=parseInt(this.value);answers[cQ]=v;setTrack(this,v,'#8b5cf6',10);});answers[cQ]=val2;con.appendChild(div);}document.getElementById('btn-back').textContent=d.back;document.getElementById('btn-back').disabled=(cQ===0);document.getElementById('btn-fwd').textContent=(cQ===tot-1)?d.finish:d.fwd;}
+function setTrack(inp,val,color,max){max=max||5;var p=(val/max)*100;inp.style.background='linear-gradient(to right,'+color+' '+p+'%,#e5e7eb '+p+'%)';inp.style.setProperty('accent-color',color);}
+function nextQ(){if(cQ<Q.length-1){cQ++;renderQ();window.scrollTo(0,0);}else{showRes();}}
+function prevQ(){if(cQ>0){cQ--;renderQ();window.scrollTo(0,0);}}
+function doRestart(){document.getElementById('res-section').style.display='none';document.getElementById('hero-section').style.display='block';if(chartObj){chartObj.destroy();chartObj=null;}answers={};cQ=0;window.scrollTo(0,0);}
+function showRes(){var sc={V:0,A:0,R:0,K:0},ss=0,sc2=0;Q.forEach(function(q,qi){var ans=answers[qi];if(ans===undefined||ans===null)return;if(q.t==='v'&&typeof ans==='object'){q.opts.forEach(function(opt,i){sc[opt.s]=(sc[opt.s]||0)+(ans[i]||0);});}else if(q.t==='s'&&typeof ans==='number'){ss+=ans;sc2++;}});var tot=(sc.V+sc.A+sc.R+sc.K)||1,pcts={V:Math.round(sc.V/tot*100),A:Math.round(sc.A/tot*100),R:Math.round(sc.R/tot*100),K:Math.round(sc.K/tot*100)},sorted=Object.entries(pcts).sort(function(a,b){return b[1]-a[1];}),dom=sorted[0][0],domP=sorted[0][1],sec=sorted[1][0],secP=sorted[1][1],socP=sc2>0?Math.round(ss/(sc2*10)*100):50,socType=socP>=65?'collaborative':(socP<=35?'independent':'balanced');document.getElementById('quiz-section').style.display='none';document.getElementById('res-section').style.display='block';window.scrollTo(0,0);var d=T[lang];document.getElementById('res-title').textContent=d.rtitle;document.getElementById('res-sub').textContent=d.rsub;document.getElementById('chart-lbl').textContent=d.chlbl;document.getElementById('scores-lbl').textContent=d.sclbl;document.getElementById('btn-print').textContent=d.print;document.getElementById('btn-restart').textContent=d.restart;function mkCard(style,pct2,main){var col=C[style],badge=main?d.d1:d.d2,tips=d.dimT[style].map(function(x){return'<span class="tip">'+x+'</span>';}).join('');return'<div class="dcard" style="border-left:4px solid '+col+'"><span class="dbadge" style="background:'+col+'22;color:'+col+'">'+badge+' &bull; '+pct2+'%</span><h3 style="color:'+col+'">'+d.dimN[style]+'</h3><p>'+d.dimD[style]+'</p><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-bottom:8px">'+d.tlbl+'</div><div class="tips">'+tips+'</div></div>';}
+document.getElementById('dom-area').innerHTML=mkCard(dom,domP,true)+mkCard(sec,secP,false);document.getElementById('soc-area').innerHTML='<div class="socres"><div class="rct">'+d.soclbl+'</div><div class="soclbls"><span>'+d.socl+'</span><span>'+d.socr+'</span></div><div class="soctr"><div class="socfi" style="width:'+socP+'%"></div></div><p style="color:#6b7280;font-size:.88rem;margin-top:6px">'+d.socD[socType]+'</p></div>';var bars=document.getElementById('sbars');bars.innerHTML='';sorted.forEach(function(e){var s=e[0],p=e[1],col=C[s];bars.innerHTML+='<div class="sbrow"><div class="sbhd"><span class="sbn" style="color:'+col+'">'+d.dimN[s]+'</span><span class="sbp" style="color:'+col+'">'+p+'%</span></div><div class="sbtr"><div class="sbfi" style="width:'+p+'%;background:'+col+'"></div></div></div>';});if(chartObj)chartObj.destroy();var ctx=document.getElementById('radarChart').getContext('2d');chartObj=new Chart(ctx,{type:'radar',data:{labels:[d.dimN.V,d.dimN.A,d.dimN.R,d.dimN.K],datasets:[{data:[pcts.V,pcts.A,pcts.R,pcts.K],backgroundColor:'rgba(124,58,237,0.12)',borderColor:'#7c3aed',borderWidth:2,pointBackgroundColor:[C.V,C.A,C.R,C.K],pointRadius:5}]},options:{scales:{r:{min:0,max:100,ticks:{display:false},grid:{color:'#e5e7eb'},pointLabels:{font:{size:11,weight:'700'}}}},plugins:{legend:{display:false}}}});}
+renderHero();
+</script>
+</body>
+</html>
